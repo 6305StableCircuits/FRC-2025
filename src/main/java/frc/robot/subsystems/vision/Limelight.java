@@ -17,8 +17,6 @@ public class Limelight extends Subsystem {
     NetworkTableEntry tv = table.getEntry("tv"); // Returns whether or not at least one valid target is in view
     double x,y,area;
     boolean v;
-
-    LinearFilter filter = LinearFilter.movingAverage(100);
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
@@ -52,9 +50,9 @@ public class Limelight extends Subsystem {
 
     // Void method on a loop pulling updated telemetry to later push to SmartDashboard
     public void readPeriodicInputs() {
-        x = this.getLock() ? filter.calculate(tx.getDouble(0.0)) : 100.0;
-        y = filter.calculate(ty.getDouble(0.0));
-        area = filter.calculate(ta.getDouble(0.0));
+        x = this.getLock() ? tx.getDouble(0.0) : 100.0;
+        y = ty.getDouble(0.0);
+        area = ta.getDouble(0.0);
         v = tv.getInteger(0) == 1 ? true : false;
     }
 
