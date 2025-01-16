@@ -29,7 +29,7 @@ public class Limelight extends Subsystem {
     
     // Accessor method returning true if a valid target is in view and false if one is not
     public boolean getLock() {
-        return tv.getBoolean(false);
+        return v;
     }
 
     // Accessor method returning the target's horizontal offset from the limelight's crosshair as a double
@@ -52,7 +52,7 @@ public class Limelight extends Subsystem {
         x = tx.getDouble(0.0);
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
-        v = tv.getBoolean(false);
+        v = tv.getInteger(0) == 1 ? true : false;
     }
 
     @Override

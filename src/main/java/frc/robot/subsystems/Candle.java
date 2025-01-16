@@ -5,10 +5,12 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 
 import frc.robot.Constants;
+import frc.robot.subsystems.vision.Limelight;
 
 public class Candle extends Subsystem {
     // Instantiate the CANdle with an ID defined in Constants
     CANdle candle = new CANdle(Constants.candleID);
+    Limelight limelight = Limelight.getInstance();
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
@@ -32,6 +34,15 @@ public class Candle extends Subsystem {
     // Mutator method for updating the active LED color on the CANdle
     public void setLEDColor(int red, int green, int blue) {
         candle.setLEDs(red, green, blue);
+    }
+
+    // Looping method setting the CANdle green if the limelight locks on to a target
+    public void update() {
+        if(limelight.getLock()) {
+            candle.setLEDs(0, 255, 0);
+        } else {
+            candle.setLEDs(255, 255, 255);
+        }
     }
 
     @Override
