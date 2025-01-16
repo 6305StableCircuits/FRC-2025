@@ -4,6 +4,7 @@ import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.Limelight;
 
@@ -28,7 +29,7 @@ public class Candle extends Subsystem {
         config.stripType = LEDStripType.RGB; // Sets the LED Strip Type to RGB
         config.brightnessScalar = 0.5; // Sets LEDs to half brightness
         candle.configAllSettings(config);
-        candle.setLEDs(255, 255, 255); // Defaults LEDs to white upon init
+        candle.setLEDs(255, 0, 0); // Defaults LEDs to red upon init
     }
 
     // Mutator method for updating the active LED color on the CANdle
@@ -36,18 +37,20 @@ public class Candle extends Subsystem {
         candle.setLEDs(red, green, blue);
     }
 
-    // Looping method setting the CANdle green if the limelight locks on to a target
+    // Looping method setting the CANdle orange if the limelight locks on to a target and green if it is centered
     public void update() {
-        if(limelight.getLock()) {
+        if(limelight.getXOffset() <= 1.0 && limelight.getXOffset() >= -1.0) {
             candle.setLEDs(0, 255, 0);
+        } else if(limelight.getLock()) {
+            candle.setLEDs(255, 128, 0);
         } else {
-            candle.setLEDs(255, 255, 255);
+            candle.setLEDs(255, 0, 0);
         }
     }
 
     @Override
     public void outputTelemetry() {}
-
+ 
     @Override
     public void stop() {}
 }

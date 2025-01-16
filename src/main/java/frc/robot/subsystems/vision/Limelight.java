@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import frc.robot.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,6 +17,8 @@ public class Limelight extends Subsystem {
     NetworkTableEntry tv = table.getEntry("tv"); // Returns whether or not at least one valid target is in view
     double x,y,area;
     boolean v;
+
+    LinearFilter filter = LinearFilter.movingAverage(100);
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
@@ -34,24 +37,24 @@ public class Limelight extends Subsystem {
 
     // Accessor method returning the target's horizontal offset from the limelight's crosshair as a double
     public double getXOffset() {
-        return tx.getDouble(0.0);
+        return x;
     }
 
     // Accessor method returning the target's vertical offset from the limelight's crosshair as a double
     public double getYOffset() {
-        return ty.getDouble(0.0);
+        return y;
     }
 
     // Accessor method returning the percentage of the limelight's view taken up by the target's area as a double
     public double getArea() {
-        return ta.getDouble(0.0);
+        return area;
     }
 
     // Void method on a loop pulling updated telemetry to later push to SmartDashboard
     public void readPeriodicInputs() {
-        x = tx.getDouble(0.0);
-        y = ty.getDouble(0.0);
-        area = ta.getDouble(0.0);
+        x = this.getLock() ? filter.calculate(tx.getDouble(0.0)) : 100.0;
+        y = filter.calculate(ty.getDouble(0.0));
+        area = filter.calculate(ta.getDouble(0.0));
         v = tv.getInteger(0) == 1 ? true : false;
     }
 
