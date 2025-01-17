@@ -7,7 +7,7 @@ package frc.robot;
 import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.Candle;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.SubsystemManager;
 import frc.robot.subsystems.vision.Limelight;
 
@@ -20,12 +20,12 @@ public class Robot extends TimedRobot {
   
   SubsystemManager subsystemManager;
   Limelight limelight;
-  Candle candle;
+  LEDs candle;
   
   public Robot() {
     // Instantiate all Subsystems
     limelight = Limelight.getInstance();
-    candle = Candle.getInstance();
+    candle = LEDs.getInstance();
 
     // Add all Subsystems to the Subsystem Manager
     subsystemManager = new SubsystemManager();
