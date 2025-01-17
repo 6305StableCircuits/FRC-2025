@@ -8,23 +8,23 @@ import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Constants;
 import frc.robot.subsystems.vision.Limelight;
 
-public class Candle extends Subsystem {
+public class LEDs extends Subsystem {
     // Instantiate the CANdle with an ID defined in Constants
     CANdle candle = new CANdle(Constants.candleID);
     Limelight limelight = Limelight.getInstance();
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
-    public static Candle instance = null;
-    public static Candle getInstance() {
+    public static LEDs instance = null;
+    public static LEDs getInstance() {
         if(instance == null) {
-            instance = new Candle();
+            instance = new LEDs();
         }
         return instance;
     }
     
     // Configure the CANdle
-    public Candle() {
+    public LEDs() {
         CANdleConfiguration config = new CANdleConfiguration();
         config.stripType = LEDStripType.RGB; // Sets the LED Strip Type to RGB
         config.brightnessScalar = 0.5; // Sets LEDs to half brightness
