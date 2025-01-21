@@ -4,57 +4,23 @@
 
 package frc.robot;
 
-import java.util.Arrays;
-
 import edu.wpi.first.wpilibj.TimedRobot;
-import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.SubsystemManager;
-import frc.robot.subsystems.vision.Limelight;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-/**
- * The methods in this class are called automatically corresponding to each mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the package after creating
- * this project, you must also update the Main.java file in the project.
- */
 public class Robot extends TimedRobot {
-  
-  SubsystemManager subsystemManager;
-  Limelight limelight;
-  LEDs candle;
-  
-  public Robot() {
-    // Instantiate all Subsystems
-    limelight = Limelight.getInstance();
-    candle = LEDs.getInstance();
+  private Command m_autonomousCommand;
 
-    // Add all Subsystems to the Subsystem Manager
-    subsystemManager = new SubsystemManager();
-    subsystemManager.addSystems(Arrays.asList(
-      limelight,
-      candle
-    ));
+  private final RobotContainer m_robotContainer;
+
+  public Robot() {
+    m_robotContainer = new RobotContainer();
   }
 
-  // Update all subsystems on the robot's loop via the Subsystem Manager
   @Override
   public void robotPeriodic() {
-    subsystemManager.updateSubsystems();
-    subsystemManager.readSystemsPeriodicInputs();
-    subsystemManager.writeSubsystemsPeriodicOutputs();
-    subsystemManager.outputSystemsTelemetry();
+    CommandScheduler.getInstance().run(); 
   }
-
-  @Override
-  public void autonomousInit() {}
-
-  @Override
-  public void autonomousPeriodic() {}
-
-  @Override
-  public void teleopInit() {}
-
-  @Override
-  public void teleopPeriodic() {}
 
   @Override
   public void disabledInit() {}
@@ -63,13 +29,46 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {}
 
   @Override
-  public void testInit() {}
+  public void disabledExit() {}
+
+  @Override
+  public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
+  }
+
+  @Override
+  public void autonomousPeriodic() {}
+
+  @Override
+  public void autonomousExit() {}
+
+  @Override
+  public void teleopInit() {
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+  }
+
+  @Override
+  public void teleopPeriodic() {}
+
+  @Override
+  public void teleopExit() {}
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void testPeriodic() {}
 
   @Override
-  public void simulationInit() {}
+  public void testExit() {}
 
   @Override
   public void simulationPeriodic() {}
