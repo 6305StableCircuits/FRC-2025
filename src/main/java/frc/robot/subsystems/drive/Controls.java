@@ -1,19 +1,20 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.vision.Limelight;
 
 public class Controls extends Subsystem {
 
-    XboxController joystick = new XboxController(0);
+    CommandXboxController joystick = new CommandXboxController(0);
     Drive swerve = Drive.getInstance();
     Limelight limelight = Limelight.getInstance();
 
     public static Controls instance = null;
     public static Controls getInstance() {
         if(instance == null) {
-            instance = Controls.getInstance();
+            instance = new Controls();
         }
         return instance;
     }
@@ -22,7 +23,7 @@ public class Controls extends Subsystem {
         swerve.swerve(joystick);
 
         if(limelight.getLock()) {
-            swerve.drivetrain.applyRequest(() -> swerve.drive.withVelocityX(1.0));
+            swerve.goRight();
         }
     }
 

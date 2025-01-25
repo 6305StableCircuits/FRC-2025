@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
@@ -22,15 +23,13 @@ public class Drive extends Subsystem {
     /** Rotational and regular deadband */
     private final double deadband = 0.1;
     /* Setting up bindings for necessary control of the swerve drive platform */
-    public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-
-    private final XboxController joystick = new XboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -42,7 +41,7 @@ public class Drive extends Subsystem {
         return instance;
     }
 
-    public void swerve(XboxController joystick) {
+    public void swerve(CommandXboxController joystick) {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -53,8 +52,10 @@ public class Drive extends Subsystem {
         );
     }
 
-    public void resetHeading() {
-        drivetrain.runOnce(() -> drivetrain.seedFieldCentric());
+    public void resetHeading(CommandXboxController joystick) {}
+
+    public void goRight() {
+        
     }
 
     public void sysIDFwdDynamic() {
