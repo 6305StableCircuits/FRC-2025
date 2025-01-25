@@ -23,7 +23,13 @@ public class Controls extends Subsystem {
         swerve.swerve(joystick);
 
         if(limelight.getLock()) {
-            swerve.goRight();
+            if(limelight.getXOffset() > 1) {
+                swerve.adjustLeft();
+            } else if(limelight.getXOffset() < -1) {
+                swerve.adjustRight();
+            } else {
+                swerve.adjustStop();
+            }
         }
     }
 

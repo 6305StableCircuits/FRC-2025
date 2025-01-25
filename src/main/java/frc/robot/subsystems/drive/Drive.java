@@ -21,7 +21,7 @@ public class Drive extends Subsystem {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = /*1.5 * Math.PI;*/ RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     /** Rotational and regular deadband */
-    private final double deadband = 0.1;
+    private final double deadband = 0.05;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 10% deadband
@@ -54,8 +54,16 @@ public class Drive extends Subsystem {
 
     public void resetHeading(CommandXboxController joystick) {}
 
-    public void goRight() {
-        
+    public void adjustLeft() {
+        drivetrain.setControl(drive.withVelocityX(-0.23));
+    }
+
+    public void adjustRight() {
+        drivetrain.setControl(drive.withVelocityX(0.23));
+    }
+
+    public void adjustStop() {
+        drivetrain.setControl(drive.withVelocityX(0));
     }
 
     public void sysIDFwdDynamic() {
