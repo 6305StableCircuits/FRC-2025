@@ -11,6 +11,11 @@ public class Controls extends Subsystem {
     Drive swerve = Drive.getInstance();
     Limelight limelight = Limelight.getInstance();
 
+    double kP = 0.1;
+    double kD = 0.05;
+    double deadband = 1;
+    double prevError = 0;
+
     public static Controls instance = null;
     public static Controls getInstance() {
         if(instance == null) {
@@ -23,13 +28,12 @@ public class Controls extends Subsystem {
         swerve.swerve(joystick);
 
         if(limelight.getLock()) {
-            if(limelight.getXOffset() > 1) {
-                swerve.adjustLeft();
-            } else if(limelight.getXOffset() < -1) {
-                swerve.adjustRight();
-            } else {
-                swerve.adjustStop();
+            if((Math.abs(limelight.getXOffset())) > deadband) {
+                double output = (limelight.getXOffset() * kP) + ((limelight.getXOffset() - prevError) * kD);
+                double velocity = Math.max(Math.min(output, 4.33), -4.33);
+                swerve.adjust(velocity);
             }
+            prevError = limelight.getXOffset();
         }
     }
 

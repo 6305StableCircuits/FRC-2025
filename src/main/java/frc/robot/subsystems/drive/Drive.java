@@ -54,16 +54,8 @@ public class Drive extends Subsystem {
 
     public void resetHeading(CommandXboxController joystick) {}
 
-    public void adjustLeft() {
-        drivetrain.setControl(drive.withVelocityX(-0.23));
-    }
-
-    public void adjustRight() {
-        drivetrain.setControl(drive.withVelocityX(0.23));
-    }
-
-    public void adjustStop() {
-        drivetrain.setControl(drive.withVelocityX(0));
+    public void adjust(double velocity) {
+        drivetrain.setControl(drive.withVelocityX(velocity));
     }
 
     public void sysIDFwdDynamic() {
