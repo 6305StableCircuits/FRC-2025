@@ -29,7 +29,7 @@ public class Controls extends Subsystem {
 
         if(limelight.getLock()) {
             if((Math.abs(limelight.getXOffset())) > deadband) {
-                double output = (limelight.getXOffset() * kP) + ((limelight.getXOffset() - prevError) * kD);
+                double output = (limelight.getXOffset() * kP) + (((limelight.getXOffset() - prevError) / 0.02) * kD);
                 double velocity = Math.max(Math.min(output, 4.33), -4.33);
                 swerve.adjust(velocity);
             }
