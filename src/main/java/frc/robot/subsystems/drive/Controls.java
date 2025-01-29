@@ -69,14 +69,16 @@ public class Controls extends Subsystem {
         //     // }
         // }
         if(joystick.a().getAsBoolean()) {
+            double t = 0;
             Rotation2d rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
             Rotation2d rot2 = new Rotation2d();
-            Pose2d pos = new Pose2d();
-            Pose2d pos2 = new Pose2d(poseX, (poseY - 0.2), rot);
-            var config = new TrajectoryConfig(0, 0);
-            var trajectory = TrajectoryGenerator.generateTrajectory(pos, null, pos2, config);
+            Pose2d pos = new Pose2d(0, 0, rot);
+            Pose2d pos2 = new Pose2d(poseX, (poseY - 0.2), rot2);
+            TrajectoryConfig config = new TrajectoryConfig(0, 0);
+            Trajectory trajectory = TrajectoryGenerator.generateTrajectory(pos, null, pos2, config);
 
-            vel = controller.calculate(pos, pos2, 1.0, rot2);
+            vel = controller.calculate(pos, trajectory.sample(t), rot2);
+            t += 0.2;
             swerve.adjust(vel.vxMetersPerSecond, vel.vyMetersPerSecond);
         }
     }
