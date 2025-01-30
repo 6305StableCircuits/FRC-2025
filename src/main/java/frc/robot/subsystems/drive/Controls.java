@@ -39,7 +39,6 @@ public class Controls extends Subsystem {
     double d;
     ChassisSpeeds vel;
     double poseX,poseY;
-    int q = 0;
     Pigeon2 pigeon = new Pigeon2(45);
     Timer timer = new Timer();
     Rotation2d rot,rot2;
@@ -47,6 +46,7 @@ public class Controls extends Subsystem {
     Translation2d mid;
     TrajectoryConfig config;
     Trajectory trajectory;
+    boolean trajectoryGenerated = false;
 
     public static Controls instance = null;
     public static Controls getInstance() {
@@ -57,8 +57,7 @@ public class Controls extends Subsystem {
     }
 
     public Controls() {
-        timer.reset();
-        q = 0;
+        timer.restart();
     }
 
     public void update() {
@@ -84,15 +83,15 @@ public class Controls extends Subsystem {
         //     // }
         // }
         if(joystick.a().getAsBoolean()) {
-            while(q++ == 0) {
+            if(!trajectoryGenerated) {
                 generateTrajectory();
                 timer.start();
+                trajectoryGenerated = true;
             }
-            System.out.println(q);
             followTrajectory();
             if(trajectory.getTotalTimeSeconds() >= timer.get()) {
                 timer.restart();
-                q = 0;
+                trajectoryGenerated = false;
             }
         }
     }
@@ -100,9 +99,9 @@ public class Controls extends Subsystem {
     public void generateTrajectory() {
         rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
         rot2 = new Rotation2d();
-        desPos = new Pose2d(0, -0.2, rot);
-        curPos = new Pose2d(poseX, poseY, rot2);
-        mid = new Translation2d((poseX / 2), ((poseY - 0.2) / 2));
+        desPos = new Pose2d(0, -0.2, rot2);
+        curPos = new Pose2d(poseX, poseY, rot);
+        mid = new Translation2d((poseX / 2), (poseY / 2));
         config = new TrajectoryConfig(4, 2);
         trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
         System.out.println("Trajectory: " + trajectory.sample(timer.get()));
