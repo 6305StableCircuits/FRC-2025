@@ -59,7 +59,7 @@ public class Limelight extends Subsystem {
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
         v = tv.getInteger(0) == 1 ? true : false;
-        pose = NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
+        pose = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
     }
 
     @Override

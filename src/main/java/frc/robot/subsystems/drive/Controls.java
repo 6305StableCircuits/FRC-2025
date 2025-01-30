@@ -28,7 +28,7 @@ public class Controls extends Subsystem {
     Limelight limelight = Limelight.getInstance();
 
     //ProfiledPIDController controller = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(5, 10));
-    HolonomicDriveController controller = new HolonomicDriveController(new PIDController(10, 0, 0), new PIDController(10, 0, 0), new ProfiledPIDController(10, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
+    HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
     double kP = 0.065;
     double kI = 0.05;
     double kD = 0;
@@ -74,17 +74,16 @@ public class Controls extends Subsystem {
         //     // }
         // }
         if(joystick.a().getAsBoolean()) {
+            timer.start();
             followTrajectory();
         }
     }
 
     public void followTrajectory() {
-        timer.reset();
-        timer.start();
         Rotation2d rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
         Rotation2d rot2 = new Rotation2d();
-        Pose2d curPos = new Pose2d(0, 0, rot2);
-        Pose2d desPos = new Pose2d(poseX, (poseY - 0.2), rot);
+        Pose2d desPos = new Pose2d(0, 0, rot);
+        Pose2d curPos = new Pose2d(poseX, (poseY - 0.2), rot2);
         Translation2d mid = new Translation2d((poseX / 2), ((poseY - 0.2) / 2));
         TrajectoryConfig config = new TrajectoryConfig(4, 8);
         Trajectory trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
