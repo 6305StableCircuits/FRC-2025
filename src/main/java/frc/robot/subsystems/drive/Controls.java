@@ -39,9 +39,14 @@ public class Controls extends Subsystem {
     double d;
     ChassisSpeeds vel;
     double poseX,poseY;
-    int i = 0;
+    int q = 0;
     Pigeon2 pigeon = new Pigeon2(45);
     Timer timer = new Timer();
+    Rotation2d rot,rot2;
+    Pose2d desPos,curPos;
+    Translation2d mid;
+    TrajectoryConfig config;
+    Trajectory trajectory;
 
     public static Controls instance = null;
     public static Controls getInstance() {
@@ -49,6 +54,11 @@ public class Controls extends Subsystem {
             instance = new Controls();
         }
         return instance;
+    }
+
+    public Controls() {
+        timer.reset();
+        q = 0;
     }
 
     public void update() {
@@ -74,28 +84,41 @@ public class Controls extends Subsystem {
         //     // }
         // }
         if(joystick.a().getAsBoolean()) {
-            timer.start();
+            while(q++ == 0) {
+                generateTrajectory();
+                timer.start();
+            }
+            System.out.println(q);
             followTrajectory();
+            if(trajectory.getTotalTimeSeconds() >= timer.get()) {
+                timer.restart();
+                q = 0;
+            }
         }
     }
 
+    public void generateTrajectory() {
+        rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
+        rot2 = new Rotation2d();
+        desPos = new Pose2d(0, -0.2, rot);
+        curPos = new Pose2d(poseX, poseY, rot2);
+        mid = new Translation2d((poseX / 2), ((poseY - 0.2) / 2));
+        config = new TrajectoryConfig(4, 2);
+        trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
+        System.out.println("Trajectory: " + trajectory.sample(timer.get()));
+    }
+
     public void followTrajectory() {
-        Rotation2d rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
-        Rotation2d rot2 = new Rotation2d();
-        Pose2d desPos = new Pose2d(0, 0, rot);
-        Pose2d curPos = new Pose2d(poseX, (poseY - 0.2), rot2);
-        Translation2d mid = new Translation2d((poseX / 2), ((poseY - 0.2) / 2));
-        TrajectoryConfig config = new TrajectoryConfig(4, 8);
-        Trajectory trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
-        System.out.println(trajectory.sample(timer.get()));
+        System.out.println("PoseX: " + poseX + "\tPoseY: " + poseY);
         vel = controller.calculate(curPos, trajectory.sample(timer.get()), rot2);
-        swerve.adjust(vel.vxMetersPerSecond, vel.vyMetersPerSecond);
+        System.out.println("Velocity: " + vel);
+        swerve.adjust(vel.vxMetersPerSecond, vel.vyMetersPerSecond, vel.omegaRadiansPerSecond);
     }
 
     public void readPeriodicInputs() {
         pose = limelight.getPose();
-        poseX = pose[0];
-        poseY = pose[2];
+        poseX = -pose[0];
+        poseY = -pose[2];
         d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }
 
