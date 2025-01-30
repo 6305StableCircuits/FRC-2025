@@ -29,12 +29,6 @@ public class Controls extends Subsystem {
 
     //ProfiledPIDController controller = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(5, 10));
     HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
-    double kP = 0.065;
-    double kI = 0.05;
-    double kD = 0;
-    double deadband = 1;
-    double prevError = 0;
-    double errorSum = 0;
     double[] pose;
     double d;
     ChassisSpeeds vel;
@@ -58,30 +52,11 @@ public class Controls extends Subsystem {
 
     public Controls() {
         timer.restart();
+        trajectoryGenerated = false;
     }
 
     public void update() {
         swerve.swerve(joystick);
-        // if(joystick.rightBumper().getAsBoolean()) {
-        //     if(limelight.getLock()) {
-        //         // if((Math.abs(limelight.getXOffset())) != 0) {
-        //         //     errorSum += (limelight.getXOffset() * 0.02);
-        //         //     double output = (limelight.getXOffset() * kP) + (((limelight.getXOffset() - prevError) / 0.02) * kD) + (errorSum * kI);
-        //         //     System.out.println(output);
-        //         //     double velocity = Math.max(Math.min(output, 4.33), -4.33);
-        //         //     swerve.adjust(-velocity);
-        //         // } else {
-        //         //     errorSum = 0;
-        //         // }
-        //         // prevError = limelight.getXOffset();
-        //         // vel = controller.calculate(0, d);
-        //         // double velx = vel * (poseX / d);
-        //         // double vely = vel * ((poseY - 0.2) / d);
-        //         // swerve.adjust(-velx, -vely);
-        //     } // else {
-        //     //     errorSum = 0;
-        //     // }
-        // }
         if(joystick.a().getAsBoolean()) {
             if(!trajectoryGenerated) {
                 generateTrajectory();
@@ -99,18 +74,18 @@ public class Controls extends Subsystem {
     public void generateTrajectory() {
         rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
         rot2 = new Rotation2d();
-        desPos = new Pose2d(0, -0.2, rot2);
-        curPos = new Pose2d(poseX, poseY, rot);
+        desPos = new Pose2d(-0.25, 0, rot);
+        curPos = new Pose2d(poseX, poseY, rot2);
         mid = new Translation2d((poseX / 2), (poseY / 2));
-        config = new TrajectoryConfig(4, 2);
+        config = new TrajectoryConfig(3, 2);
         trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
         System.out.println("Trajectory: " + trajectory.sample(timer.get()));
     }
 
     public void followTrajectory() {
-        System.out.println("PoseX: " + poseX + "\tPoseY: " + poseY);
+        //System.out.println("PoseX: " + poseX + "\tPoseY: " + poseY);
         vel = controller.calculate(curPos, trajectory.sample(timer.get()), rot2);
-        System.out.println("Velocity: " + vel);
+        //System.out.println("Velocity: " + vel);
         swerve.adjust(vel.vxMetersPerSecond, vel.vyMetersPerSecond, vel.omegaRadiansPerSecond);
     }
 
