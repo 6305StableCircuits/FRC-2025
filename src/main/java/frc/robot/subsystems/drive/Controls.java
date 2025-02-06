@@ -3,6 +3,10 @@ package frc.robot.subsystems.drive;
 import java.util.List;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -32,7 +36,7 @@ public class Controls extends Subsystem {
     double[] pose;
     double d;
     ChassisSpeeds vel;
-    double poseX,poseY;
+    double poseX,poseY,yaw;
     Pigeon2 pigeon = new Pigeon2(45);
     Timer timer = new Timer();
     Rotation2d rot,rot2;
@@ -53,6 +57,7 @@ public class Controls extends Subsystem {
     public Controls() {
         timer.restart();
         trajectoryGenerated = false;
+        pigeon.reset();
     }
 
     public void update() {
@@ -62,8 +67,9 @@ public class Controls extends Subsystem {
                 generateTrajectory();
                 timer.start();
                 trajectoryGenerated = true;
+            } else {
+                followTrajectory();
             }
-            followTrajectory();
             if(trajectory.getTotalTimeSeconds() >= timer.get()) {
                 timer.restart();
                 trajectoryGenerated = false;
@@ -72,27 +78,41 @@ public class Controls extends Subsystem {
     }
 
     public void generateTrajectory() {
-        rot = new Rotation2d(pigeon.getYaw(true).getValueAsDouble());
+        rot = new Rotation2d(yaw);
         rot2 = new Rotation2d();
-        desPos = new Pose2d(-0.25, 0, rot);
-        curPos = new Pose2d(poseX, poseY, rot2);
+        desPos = new Pose2d(0, 0, rot2);
+        curPos = new Pose2d(poseX, poseY, rot);
         mid = new Translation2d((poseX / 2), (poseY / 2));
         config = new TrajectoryConfig(3, 2);
         trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
         System.out.println("Trajectory: " + trajectory.sample(timer.get()));
     }
 
+    public void pathPlannerStuff() {
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+            curPos,
+            desPos
+        );
+        PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
+        @SuppressWarnings("unused") //viola ✨
+        PathPlannerPath path = new PathPlannerPath(
+            waypoints, constraints, null, new GoalEndState(0.0, rot2));
+    }
+
     public void followTrajectory() {
-        //System.out.println("PoseX: " + poseX + "\tPoseY: " + poseY);
-        vel = controller.calculate(curPos, trajectory.sample(timer.get()), rot2);
-        //System.out.println("Velocity: " + vel);
-        swerve.adjust(vel.vxMetersPerSecond, vel.vyMetersPerSecond, vel.omegaRadiansPerSecond);
+        Rotation2d newRot = new Rotation2d(yaw);
+        Pose2d curPos2 = new Pose2d(poseX, poseY, newRot);
+        System.out.println(trajectory);
+        vel = controller.calculate(curPos2, trajectory.sample(timer.get()), rot2);
+        //System.out.println(curPos2);
+        //swerve.adjust(-vel.vxMetersPerSecond, vel.vyMetersPerSecond, vel.omegaRadiansPerSecond);
     }
 
     public void readPeriodicInputs() {
         pose = limelight.getPose();
-        poseX = -pose[0];
+        poseX = pose[0];
         poseY = -pose[2];
+        yaw = pose[4];
         d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }
 
