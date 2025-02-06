@@ -95,8 +95,8 @@ public class Drive extends Subsystem {
         try{
             return new FollowPathCommand(
                     path,
-                    new Supplier<Pose2d>(drivetrain.getState().Pose), // Robot pose supplier
-                    new Supplier<ChassisSpeeds>(drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates)), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                    () -> drivetrain.getState().Pose, // Robot pose supplier
+                    () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                     (ChassisSpeeds speeds, DriveFeedforwards ff) -> drivetrain.setControl(drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                             new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
