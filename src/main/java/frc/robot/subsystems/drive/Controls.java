@@ -67,19 +67,18 @@ public class Controls extends Subsystem {
             if(!trajectoryGenerated) {
                 generateTrajectory();
                 trajectoryGenerated = true;
-            } else {
                 swerve.followPathCommand(path);
-            }
-            if(trajectory.getTotalTimeSeconds() >= timer.get()) {
-                trajectoryGenerated = false;
-            }
+            } else {}
+            // if(trajectory.getTotalTimeSeconds() >= timer.get()) {
+            //     trajectoryGenerated = false;
+            // }
         }
     }
 
     // public void generateTrajectory() {
     //     rot = new Rotation2d(yaw);
     //     rot2 = new Rotation2d();
-    //     desPos = new Pose2d(0, 0, rot2);
+    //     desPos = new Pose2d(0, 0.2, rot2);
     //     curPos = new Pose2d(poseX, poseY, rot);
     //     mid = new Translation2d((poseX / 2), (poseY / 2));
     //     config = new TrajectoryConfig(3, 2);
@@ -87,14 +86,42 @@ public class Controls extends Subsystem {
     //     System.out.println("Trajectory: " + trajectory.sample(timer.get()));
     // }
 
+    // public void generateTrajectory() {
+    //     rot = new Rotation2d(yaw);
+    //     rot2 = new Rotation2d();
+    //     desPos = new Pose2d(0, 0.2, rot);
+    //     curPos = new Pose2d(poseX, poseY, rot);
+    //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+    //         curPos,
+    //         desPos
+    //     );
+    //     PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
+    //     path = new PathPlannerPath(
+    //         waypoints, constraints, null, new GoalEndState(0.0, rot2));
+    // }
+
     public void generateTrajectory() {
+                // Create a list of waypoints from poses. Each pose represents one waypoint.
+        // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            curPos,
-            desPos
+            new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
+            new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
+            new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
         );
-        PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
+
+        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
+        // PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0); // You can also use unlimited constraints, only limited by motor torque and nominal battery voltage
+
+        // Create the path using the waypoints created above
         path = new PathPlannerPath(
-            waypoints, constraints, null, new GoalEndState(0.0, rot2));
+            waypoints,
+            constraints,
+            null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
+            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
+        );
+
+        // Prevent the path from being flipped if the coordinates are already correct
+        path.preventFlipping = true;
     }
 
     // public void followTrajectory() {
@@ -102,14 +129,14 @@ public class Controls extends Subsystem {
     //     Pose2d curPos2 = new Pose2d(poseX, poseY, newRot);
     //     System.out.println(trajectory);
     //     vel = controller.calculate(curPos2, trajectory.sample(timer.get()), rot2);
-    //     //System.out.println(curPos2);
-    //     //swerve.adjust(-vel.vxMetersPerSecond, vel.vyMetersPerSecond, vel.omegaRadiansPerSecond);
+    //     System.out.println(curPos2);
+    //     swerve.adjust(vel);
     // }
 
     public void readPeriodicInputs() {
         pose = limelight.getPose();
         poseX = pose[0];
-        poseY = -pose[2];
+        poseY = pose[2];
         yaw = pose[4];
         d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }

@@ -43,6 +43,7 @@ public class Drive extends Subsystem {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     @SuppressWarnings("unused")
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+    private final SwerveRequest.ApplyFieldSpeeds swerveroni = new SwerveRequest.ApplyFieldSpeeds();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -69,10 +70,8 @@ public class Drive extends Subsystem {
 
     public void resetHeading(CommandXboxController joystick) {}
 
-    public void adjust(double velocityX, double velocityY, double velocityOmega) {
-        drivetrain.setControl(drive.withVelocityX(velocityX));
-        drivetrain.setControl(drive.withVelocityY(velocityY));
-        drivetrain.setControl(drive.withRotationalRate(velocityOmega));
+    public void adjust(ChassisSpeeds speeds) {
+        drivetrain.setControl(swerveroni.withSpeeds(speeds));
     }
 
     public void sysIDFwdDynamic() {
@@ -97,10 +96,10 @@ public class Drive extends Subsystem {
                     path,
                     () -> drivetrain.getState().Pose, // Robot pose supplier
                     () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                    (ChassisSpeeds speeds, DriveFeedforwards ff) -> drivetrain.setControl(drive.withVelocityX(speeds.vxMetersPerSecond).withVelocityY(speeds.vyMetersPerSecond)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
+                    (ChassisSpeeds speeds, DriveFeedforwards ff) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
                     new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                            new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
+                            new PIDConstants(1.0, 0.0, 0.0) // Rotation PID constants
                     ),
                     Constants.robotConfig, // The robot configuration
                     () -> {
