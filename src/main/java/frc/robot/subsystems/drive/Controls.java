@@ -77,9 +77,10 @@ public class Controls extends Subsystem {
         }
         if(joystick.b().getAsBoolean()) {
             elevator.elevatorUp();
-        }
-        if(joystick.x().getAsBoolean()) {
+        } else if(joystick.x().getAsBoolean()) {
             elevator.elevatorDown();
+        } else {
+            elevator.elevatorStop();
         }
     }
 
