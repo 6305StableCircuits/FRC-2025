@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.CANdleConfiguration;
+import com.ctre.phoenix.led.RainbowAnimation;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Constants;
@@ -44,7 +46,8 @@ public class LEDs extends Subsystem {
         } else if(limelight.getLock()) {
             candle.setLEDs(255, 128, 0);
         } else {
-            candle.setLEDs(255, 0, 0);
+            RainbowAnimation anim = new RainbowAnimation(1.0, 100.0, 8);
+            candle.animate(anim);
         }
     }
 

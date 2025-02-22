@@ -15,4 +15,7 @@ public class Constants {
             e.printStackTrace();
         }
     }
+
+    public static final int hunterID = 10;
+    public static final int garrettID = 9;
 }

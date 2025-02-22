@@ -9,11 +9,13 @@ import java.util.Arrays;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.SubsystemManager;
 import frc.robot.subsystems.drive.Controls;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Limelight;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -25,6 +27,7 @@ public class Robot extends TimedRobot {
   LEDs leds;
   Drive drive;
   Controls controls;
+  Elevator elevator;
   
   public Robot() {
     // Instantiate all Subsystems
@@ -32,6 +35,7 @@ public class Robot extends TimedRobot {
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
     controls = Controls.getInstance();
+    elevator = Elevator.getInstance();
 
     m_robotContainer = new RobotContainer();
 
@@ -41,8 +45,10 @@ public class Robot extends TimedRobot {
       limelight,
       leds,
       drive,
-      controls
+      controls,
+      elevator
     ));
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   // Update all subsystems on the robot's loop via the Subsystem Manager
@@ -52,7 +58,7 @@ public class Robot extends TimedRobot {
     subsystemManager.updateSubsystems();
     subsystemManager.readSystemsPeriodicInputs();
     subsystemManager.writeSubsystemsPeriodicOutputs();
-    subsystemManager.outputSystemsTelemetry(); 
+    subsystemManager.outputSystemsTelemetry();
   }
 
   @Override
