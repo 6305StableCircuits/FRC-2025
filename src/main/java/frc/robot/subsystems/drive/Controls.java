@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.vision.Limelight;
 
@@ -32,6 +33,7 @@ public class Controls extends Subsystem {
     Drive swerve = Drive.getInstance();
     Limelight limelight = Limelight.getInstance();
     Elevator elevator = Elevator.getInstance();
+    Shooter shooter = Shooter.getInstance();
 
     //ProfiledPIDController controller = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(5, 10));
     HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
@@ -81,6 +83,13 @@ public class Controls extends Subsystem {
             elevator.elevatorDown();
         } else {
             elevator.elevatorStop();
+        }
+        if (joystick.leftTrigger().getAsBoolean()) {
+            shooter.forward();
+        } else if (joystick.rightTrigger().getAsBoolean()) {
+            shooter.reverse();
+        } else {
+            shooter.stopShooter();
         }
     }
 
