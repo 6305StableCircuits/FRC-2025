@@ -35,8 +35,8 @@ public class Elevator extends Subsystem {
         garrettConfig = new TalonFXConfiguration();
         hunterController = new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(2, 4), 0.02);
         garrettController = new ProfiledPIDController(0.1, 0, 0, new TrapezoidProfile.Constraints(2, 4), 0.02);
-        hunterFeedForward = new ElevatorFeedforward(0, 0, 0);
-        garrettFeedForward = new ElevatorFeedforward(0, 0,0);
+        hunterFeedForward = new ElevatorFeedforward(0, 0.05, 1.5);
+        garrettFeedForward = new ElevatorFeedforward(0, 0.05,1.5);
         hunter = new TalonFX(Constants.hunterID, "Canviore");
         garrett = new TalonFX(Constants.garrettID, "Canviore");
         limitSwitch = new DigitalInput(0);
@@ -47,9 +47,10 @@ public class Elevator extends Subsystem {
     }
 
     public void raiseL2() {
-        hunterController.setGoal(heightToMotorDegrees(10));
+        hunterController.setGoal(heightToMotorDegrees(-10));
         garrettController.setGoal(heightToMotorDegrees(10));
-        hunter.setControl(new VoltageOut(hunterController.calculate()))
+        hunter.setControl(new VoltageOut(hunterController.calculate((hunter.getPosition().getValueAsDouble() * 360)) + hunterFeedForward.calculate(hunterController.getSetpoint().velocity)));
+        garrett.setControl(new VoltageOut(garrettController.calculate((garrett.getPosition().getValueAsDouble() * 360)) + garrettFeedForward.calculate(garrettController.getSetpoint().velocity)));
     }
 
     public void elevatorUp() {
