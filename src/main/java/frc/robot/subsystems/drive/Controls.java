@@ -84,12 +84,22 @@ public class Controls extends Subsystem {
         } else {
             elevator.elevatorStop();
         }
-        if (joystick.leftTrigger().getAsBoolean()) {
+        if (joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
-        } else if (joystick.rightTrigger().getAsBoolean()) {
+        } else if (joystick.leftTrigger().getAsBoolean()) {
             shooter.reverse();
         } else {
             shooter.stopShooter();
+        }
+        if(joystick.leftBumper().getAsBoolean()) {
+            shooter.left();
+        } else if (joystick.rightBumper().getAsBoolean()) {
+            shooter.right();
+        } else {
+            shooter.stopSlide();
+        }
+        if(joystick.a().getAsBoolean()) {
+            elevator.raiseL2();
         }
     }
 

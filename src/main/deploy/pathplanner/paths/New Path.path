@@ -1,0 +1,65 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.076988636363636,
+        "y": 6.497954545454545
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.497374002590162,
+        "y": 6.59360046507358
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5156818181818184,
+        "y": 6.906789772727272
+      },
+      "prevControl": {
+        "x": 2.483767921655791,
+        "y": 6.781086588178214
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 1.0,
+        "y": 7.5
+      },
+      "rotationOffset": 180.0,
+      "minWaypointRelativePos": 0.25,
+      "maxWaypointRelativePos": 0.75,
+      "name": "Point Towards Zone"
+    }
+  ],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 6.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 2048.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -52.352379359892424
+  },
+  "reversed": false,
+  "folder": "CoralPaths",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -2.9356734464212497
+  },
+  "useDefaultConstraints": true
+}

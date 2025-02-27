@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
 import frc.robot.Constants;
@@ -7,6 +8,7 @@ import frc.robot.Constants;
 public class Shooter extends Subsystem {
     public SparkMax sasha;
     public SparkMax makena;
+    public SparkMax sabrina;
     private static Shooter instance = null;
     public static Shooter getInstance() {
         if (instance == null) {
@@ -16,18 +18,31 @@ public class Shooter extends Subsystem {
     }
 
     public Shooter() {
-        sasha = new SparkMax(Constants.sashaID, null);
-        makena = new SparkMax(Constants.makenaID, null);
+        sasha = new SparkMax(Constants.sashaID, MotorType.kBrushless);
+        makena = new SparkMax(Constants.makenaID, MotorType.kBrushless);
+        sabrina = new SparkMax(Constants.sabrinaID, MotorType.kBrushless);
     }
 
-    public void reverse() {
+    public void forward() {
         sasha.set(0.2);
         makena.set(-0.2);
     }
 
-    public void forward() {
+    public void reverse() {
         sasha.set(-0.2);
         makena.set(0.2);
+    }
+    
+    public void right() {
+        sabrina.set(0.15);
+    }
+
+    public void left() {
+        sabrina.set(-0.15);
+    }
+
+    public void stopSlide() {
+        sabrina.stopMotor();
     }
 
     public void stopShooter() {
