@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Shooter extends Subsystem {
@@ -49,6 +51,24 @@ public class Shooter extends Subsystem {
         sasha.stopMotor();
         makena.stopMotor();
     }
+
+    public double x = 0;
+    public double y = 0;
+
+    // public void update(){
+    //     SmartDashboard.putNumber("Current Amperage:", sasha.getOutputCurrent());
+    //     if(/*intaking */){
+    //         LinearFilter filter = LinearFilter.movingAverage(5);
+    //         x = filter.calculate(sasha.getOutputCurrent());
+    //         if(sasha.getOutputCurrent() > 9){
+    //             //stop intake
+    //         }
+    //         if((x - y) < 0 && sasha.getOutputCurrent() < 12 /*&& is intaking */){
+    //             //pipe? held
+    //         }
+    //         y = x;
+    //     }
+    // }
 
     @Override
     public void outputTelemetry() {}
