@@ -26,14 +26,14 @@ public class Shooter extends Subsystem {
     }
 
     public void forward() {
-        sasha.set(0.2);
-        makena.set(-0.2);
+        sasha.set(1.0);
+        makena.set(-0.9);
     }
 
     public void reverse() {
-        sasha.set(-0.2);
-        makena.set(0.2);
-        intaking = true;
+        sasha.set(-0.4);
+        makena.set(0.4);
+        // intaking = true;
     }
     
     public void right() {
@@ -51,27 +51,26 @@ public class Shooter extends Subsystem {
     public void stopShooter() {
         sasha.stopMotor();
         makena.stopMotor();
-        intaking = false;
+        // intaking = false;
     }
 
-    public double filterData = 0;
-    public double filterData2 = 0;
-    public boolean intaking = false;
+    // public double filterData = 0;
+    // public double filterData2 = 0;
+    // public boolean intaking = false;
 
     public void update(){
-        SmartDashboard.putNumber("Current Amperage:", sasha.getOutputCurrent());
-        if(intaking){
-            LinearFilter filter = LinearFilter.movingAverage(5);
-            filterData = filter.calculate(sasha.getOutputCurrent());
-            if(sasha.getOutputCurrent() > 9){
-                stopShooter();
-            }
-            // if((filterData - filterData2) < 0 && sasha.getOutputCurrent() < 12 && intaking){
-            //     //pipe(?) held
-            // }
-            filterData2 = filterData;
+        // SmartDashboard.putNumber("Current Amperage:", sasha.getOutputCurrent());
+        // if(intaking){
+        //     LinearFilter filter = LinearFilter.movingAverage(5);
+        //     filterData = filter.calculate(sasha.getOutputCurrent());
+        //     if(sasha.getOutputCurrent() > 9){
+        //         stopShooter();
+        //     }
+        //     // if((filterData - filterData2) < 0 && sasha.getOutputCurrent() < 12 && intaking){
+        //     //     //pipe(?) held
+        //     // }
+        //     filterData2 = filterData;
         }
-    }
 
     @Override
     public void outputTelemetry() {}

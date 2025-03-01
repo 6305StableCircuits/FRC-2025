@@ -67,23 +67,23 @@ public class Controls extends Subsystem {
 
     public void update() {
         swerve.swerve(joystick);
-        if(joystick.a().getAsBoolean()) {
-            if(!trajectoryGenerated) {
-                generateTrajectory();
-                trajectoryGenerated = true;
-                swerve.followPathCommand(path);
-            } else {}
-            // if(trajectory.getTotalTimeSeconds() >= timer.get()) {
-            //     trajectoryGenerated = false;
-            // }
-        }
-        if(joystick.b().getAsBoolean()) {
-            elevator.elevatorUp();
-        } else if(joystick.x().getAsBoolean()) {
-            elevator.elevatorDown();
-        } else {
-            elevator.elevatorStop();
-        }
+        // if(joystick.a().getAsBoolean()) {
+        //     if(!trajectoryGenerated) {
+        //         generateTrajectory();
+        //         trajectoryGenerated = true;
+        //         swerve.followPathCommand(path);
+        //     } else {}
+        //     // if(trajectory.getTotalTimeSeconds() >= timer.get()) {
+        //     //     trajectoryGenerated = false;
+        //     // }
+        // }
+        // if(joystick.b().getAsBoolean()) {
+        //     elevator.elevatorUp();
+        // } else if(joystick.x().getAsBoolean()) {
+        //     elevator.elevatorDown();
+        // } else {
+        //     elevator.elevatorStop();
+        // }
         if (joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
         } else if (joystick.leftTrigger().getAsBoolean()) {

@@ -1,8 +1,13 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
+
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -14,6 +19,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
@@ -29,8 +35,6 @@ public class Elevator extends Subsystem {
     public ElevatorFeedforward garrettFeedForward;
     public DigitalInput limitSwitch;
 
-    Slot0Configs hunterSlot0Configs = new Slot0Configs();
-    MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
     //final TrapezoidProfile hunterProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(0.5, 0.0625));
     final MotionMagicVoltage hunterRequest = new MotionMagicVoltage(0);
     //final PositionVoltage hunterRequest = new PositionVoltage(0).withSlot(0);
@@ -49,16 +53,21 @@ public class Elevator extends Subsystem {
         // garrettConfig = new TalonFXConfiguration();
         hunter = new TalonFX(Constants.hunterID, "Canviore");
         garrett = new TalonFX(Constants.garrettID, "Canviore");
+        hunter.setPosition(0);
+        // garrett.setPosition(0);
+        hunterConfig.MotorOutput.withInverted(InvertedValue.Clockwise_Positive);
         hunter.setNeutralMode(NeutralModeValue.Brake);
         garrett.setNeutralMode(NeutralModeValue.Brake);
-        //hunterSlot0Configs.kG = 0;
-        hunterConfig.Slot0.kP = 5;
-        //hunterSlot0Configs.kS = 0;
-        //hunterSlot0Configs.kI = 0;
-        hunterConfig.MotionMagic.MotionMagicAcceleration = .75;
-        hunterConfig.MotionMagic.MotionMagicAcceleration = 0.5;
-        hunterConfig.MotionMagic.MotionMagicJerk = 0.25;
-        // hunterSlot0Configs.kD = 0.5;
+        MotionMagicConfigs mm = hunterConfig.MotionMagic;
+        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(0.5))
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(0.3)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(0.2));
+        Slot0Configs slot0 = hunterConfig.Slot0;
+        slot0.kP = 72;
+        slot0.kI = 0.8;
+        slot0.kG = 0.2;
+        slot0.kV = 3.11;
+        slot0.kS = 0.2;
+
         limitSwitch = new DigitalInput(0);
         hunter.getConfigurator().apply(hunterConfig);
     }
@@ -75,30 +84,30 @@ public class Elevator extends Subsystem {
 
         // hunterRequest.Position = hunterSetpoint.position;
 
-        hunter.setControl(hunterRequest.withPosition(9));
+        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0));
         garrett.setControl(garrettRequest);
     }
 
-    public void elevatorUp() {
-        hunter.set(-0.20);
-        garrett.set(0.20);
-    }
+    // public void elevatorUp() {
+    //     hunter.set(-0.20);
+    //     garrett.set(0.20);
+    // }
 
-    public void elevatorDown() {
-        if(limitSwitch.get()) {
-            hunter.set(0.2);
-            garrett.set(-0.2);   
-        }
-    }
+    // public void elevatorDown() {
+    //     if(limitSwitch.get()) {
+    //         hunter.set(0.2);
+    //         garrett.set(-0.2);   
+    //     }
+    // }
 
-    public void elevatorStop() {
-        hunter.set(0);
-        garrett.set(0);
-    }
+    // public void elevatorStop() {
+    //     hunter.set(0);
+    //     garrett.set(0);
+    // }
 
     @Override
     public void outputTelemetry() {
-        //System.out.println(hunter.getPosition().getValueAsDouble());
+        System.out.println(hunter.getPosition().getValueAsDouble());
     }
 
     @Override
