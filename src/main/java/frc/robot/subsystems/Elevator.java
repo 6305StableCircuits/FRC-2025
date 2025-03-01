@@ -77,14 +77,7 @@ public class Elevator extends Subsystem {
     }
 
     public void raiseL2() {
-        // TrapezoidProfile.State hunterGoal = new TrapezoidProfile.State(30, 0);
-        // TrapezoidProfile.State hunterSetpoint = new TrapezoidProfile.State();
-
-        // hunterSetpoint = hunterProfile.calculate(0.02, hunterSetpoint, hunterGoal);
-
-        // hunterRequest.Position = hunterSetpoint.position;
-
-        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0));
+        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0)); //14 to 15 inches
         garrett.setControl(garrettRequest);
     }
 

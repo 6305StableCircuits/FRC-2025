@@ -1,9 +1,13 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -11,6 +15,9 @@ public class Shooter extends Subsystem {
     public SparkMax sasha;
     public SparkMax makena;
     public SparkMax sabrina;
+    public RelativeEncoder encoder;
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.5, 0.25);
+    private final ProfiledPIDController sabrinaController = new ProfiledPIDController(0.1, 0, 0, constraints);
     private static Shooter instance = null;
     public static Shooter getInstance() {
         if (instance == null) {
@@ -23,6 +30,8 @@ public class Shooter extends Subsystem {
         sasha = new SparkMax(Constants.sashaID, MotorType.kBrushless);
         makena = new SparkMax(Constants.makenaID, MotorType.kBrushless);
         sabrina = new SparkMax(Constants.sabrinaID, MotorType.kBrushless);
+        encoder = sabrina.getEncoder();
+        encoder.setPosition(0);
     }
 
     public void forward() {
@@ -42,6 +51,11 @@ public class Shooter extends Subsystem {
 
     public void left() {
         sabrina.set(-0.15);
+    }
+
+    public void center() {
+        sabrinaController.setGoal(0);
+        sabrina.setVoltage(sabrinaController.calculate(encoder.getPosition()));
     }
 
     public void stopSlide() {
