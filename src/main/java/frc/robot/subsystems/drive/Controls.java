@@ -100,6 +100,8 @@ public class Controls extends Subsystem {
         }
         if(joystick.a().getAsBoolean()) {
             elevator.raiseL2();
+        } else if(joystick.start().getAsBoolean()) {
+            elevator.resetElevator();
         }
     }
 

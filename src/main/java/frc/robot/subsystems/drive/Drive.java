@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -58,6 +59,34 @@ public class Drive extends Subsystem {
         return instance;
     }
 
+    public Drive() {
+
+    // Configure AutoBuilder last
+    AutoBuilder.configure(
+            () -> drivetrain.getState().Pose, // Robot pose supplier
+            (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has a starting pose)
+            () -> drivetrain.getState().Speeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+            ),
+            Constants.robotConfig, // The robot configuration
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            drivetrain // Reference to this subsystem to set requirements
+    );
+    }
+
     public void swerve(CommandXboxController joystick) {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -89,37 +118,6 @@ public class Drive extends Subsystem {
 
     public void sysIDBwdQuasistatic() {
         drivetrain.sysIdQuasistatic(Direction.kReverse);
-    }
-
-    public Command followPathCommand(PathPlannerPath path) {
-        try{
-            return new FollowPathCommand(
-                    path,
-                    () -> drivetrain.getState().Pose, // Robot pose supplier
-                    () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                    (ChassisSpeeds speeds, DriveFeedforwards ff) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds, AND feedforwards
-                    new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                            new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
-                            new PIDConstants(1.0, 0.0, 0.0) // Rotation PID constants
-                    ),
-                    Constants.robotConfig, // The robot configuration
-                    () -> {
-                      // Boolean supplier that controls when the path will be mirrored for the red alliance
-                      // This will flip the path being followed to the red side of the field.
-                      // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-    
-                      var alliance = DriverStation.getAlliance();
-                      if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                      }
-                      return false;
-                    },
-                    drivetrain // Reference to this subsystem to set requirements
-            );
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
-        }
     }
 
     @Override

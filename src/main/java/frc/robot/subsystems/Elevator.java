@@ -59,12 +59,12 @@ public class Elevator extends Subsystem {
         hunter.setNeutralMode(NeutralModeValue.Brake);
         garrett.setNeutralMode(NeutralModeValue.Brake);
         MotionMagicConfigs mm = hunterConfig.MotionMagic;
-        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(0.5))
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(0.3)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(0.2));
+        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(2.2))
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(2)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(1.25));
         Slot0Configs slot0 = hunterConfig.Slot0;
         slot0.kP = 72;
-        slot0.kI = 0.8;
-        slot0.kG = 0.2;
+        slot0.kI = 2.0;
+        slot0.kG = 0.4;
         slot0.kV = 3.11;
         slot0.kS = 0.2;
 
@@ -76,8 +76,13 @@ public class Elevator extends Subsystem {
         return 0.225 * heightRequest;
     }
 
+    public void resetElevator() {
+        hunter.setControl(hunterRequest.withPosition(0).withSlot(0));
+        garrett.setControl(garrettRequest);
+    }
+
     public void raiseL2() {
-        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0)); //14 to 15 inches
+        hunter.setControl(hunterRequest.withPosition(29).withSlot(0)); //14 to 15 inches up
         garrett.setControl(garrettRequest);
     }
 
