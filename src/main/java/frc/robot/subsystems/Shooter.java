@@ -35,8 +35,8 @@ public class Shooter extends Subsystem {
     }
 
     public void forward() {
-        sasha.set(1.0);
-        makena.set(-0.9);
+        sasha.set(0.6);
+        makena.set(-0.5);
     }
 
     public void reverse() {

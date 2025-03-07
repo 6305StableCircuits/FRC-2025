@@ -58,15 +58,16 @@ public class Elevator extends Subsystem {
         hunterConfig.MotorOutput.withInverted(InvertedValue.Clockwise_Positive);
         hunter.setNeutralMode(NeutralModeValue.Brake);
         garrett.setNeutralMode(NeutralModeValue.Brake);
-        MotionMagicConfigs mm = hunterConfig.MotionMagic;
-        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(2.2))
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(2)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(1.25));
+        MotionMagicConfigs mm = hunterConfig.MotionMagic; // 80, 80, 90
+        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(2))
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(2.2)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(1.25));
         Slot0Configs slot0 = hunterConfig.Slot0;
-        slot0.kP = 72;
-        slot0.kI = 2.0;
-        slot0.kG = 0.4;
-        slot0.kV = 3.11;
-        slot0.kS = 0.2;
+        slot0.kP = 21; // was 72
+        slot0.kI = 0.5; // was 2.0
+        slot0.kG = 0.75; // was 0.4
+        slot0.kV = 1.46; // was 3.11
+        slot0.kA = 0.5;
+        slot0.kS = 0; // was 0.2
 
         limitSwitch = new DigitalInput(0);
         hunter.getConfigurator().apply(hunterConfig);
@@ -82,30 +83,25 @@ public class Elevator extends Subsystem {
     }
 
     public void raiseL2() {
-        hunter.setControl(hunterRequest.withPosition(29).withSlot(0)); //14 to 15 inches up
+        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0)); // 15.5
         garrett.setControl(garrettRequest);
     }
 
-    // public void elevatorUp() {
-    //     hunter.set(-0.20);
-    //     garrett.set(0.20);
-    // }
+    public void raiseL3() {
+        hunter.setControl(hunterRequest.withPosition(28.25).withSlot(0)); // 28.25
+        garrett.setControl(garrettRequest);
+    }
 
-    // public void elevatorDown() {
-    //     if(limitSwitch.get()) {
-    //         hunter.set(0.2);
-    //         garrett.set(-0.2);   
-    //     }
-    // }
-
-    // public void elevatorStop() {
-    //     hunter.set(0);
-    //     garrett.set(0);
-    // }
+    public void rasieL4() {
+        hunter.setControl(hunterRequest.withPosition(34).withSlot(0));
+        garrett.setControl(garrettRequest);
+    }
 
     @Override
     public void outputTelemetry() {
         System.out.println(hunter.getPosition().getValueAsDouble());
+        
+        //System.out.println(hunter.getAcceleration().getValueAsDouble());
     }
 
     @Override
