@@ -59,8 +59,8 @@ public class Elevator extends Subsystem {
         hunter.setNeutralMode(NeutralModeValue.Brake);
         garrett.setNeutralMode(NeutralModeValue.Brake);
         MotionMagicConfigs mm = hunterConfig.MotionMagic; // 80, 80, 90
-        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(2))
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(2.2)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(1.25));
+        mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(80))
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(80)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(90));
         Slot0Configs slot0 = hunterConfig.Slot0;
         slot0.kP = 21; // was 72
         slot0.kI = 0.5; // was 2.0
@@ -99,7 +99,7 @@ public class Elevator extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        System.out.println(hunter.getPosition().getValueAsDouble());
+        //System.out.println(hunter.getPosition().getValueAsDouble());
         
         //System.out.println(hunter.getAcceleration().getValueAsDouble());
     }

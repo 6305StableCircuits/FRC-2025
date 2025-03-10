@@ -41,14 +41,16 @@ public class LEDs extends Subsystem {
 
     // Looping method setting the CANdle orange if the limelight locks on to a target and green if it is centered
     public void update() {
-        if(limelight.getXOffset() <= 1.0 && limelight.getXOffset() >= -1.0) {
-            candle.setLEDs(0, 255, 0);
-        } else if(limelight.getLock()) {
-            candle.setLEDs(255, 128, 0);
-        } else {
-            RainbowAnimation anim = new RainbowAnimation(1.0, 100.0, 8);
-            candle.animate(anim);
-        }
+        // if(limelight.getXOffset() <= 1.0 && limelight.getXOffset() >= -1.0) {
+        //     candle.setLEDs(0, 255, 0);
+        // } else if(limelight.getLock()) {
+        //     candle.setLEDs(255, 128, 0);
+        // } else {
+        //     RainbowAnimation anim = new RainbowAnimation(1.0, 100.0, 8);
+        //     candle.animate(anim);
+        // }
+        RainbowAnimation anim = new RainbowAnimation(1.0, 100.0, 200);
+        candle.animate(anim);
     }
 
     @Override

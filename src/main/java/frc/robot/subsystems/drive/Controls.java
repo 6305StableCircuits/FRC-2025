@@ -2,12 +2,14 @@ package frc.robot.subsystems.drive;
 
 import java.util.List;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.hal.PWMJNI;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -19,9 +21,17 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
+import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.DigitalSource;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+//import frc.robot.commands.L2.L2Left;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Subsystem;
@@ -30,13 +40,15 @@ import frc.robot.subsystems.vision.Limelight;
 public class Controls extends Subsystem {
 
     CommandXboxController joystick = new CommandXboxController(0);
+    GenericHID buttonBoard = new GenericHID(1);
     Drive swerve = Drive.getInstance();
     Limelight limelight = Limelight.getInstance();
     Elevator elevator = Elevator.getInstance();
     Shooter shooter = Shooter.getInstance();
+    //L2Left l2Left = new L2Left(this);
 
     //ProfiledPIDController controller = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(5, 10));
-    HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
+    //HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
     double[] pose;
     double d;
     ChassisSpeeds vel;
@@ -50,6 +62,15 @@ public class Controls extends Subsystem {
     Trajectory trajectory;
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
+    //kI for both was 0.025
+    ProfiledPIDController xController = new ProfiledPIDController(0.96, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController yController = new ProfiledPIDController(0.96, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController rotController = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(3, 1));
+    //ProfiledPIDController rotController = new ProfiledPIDController(0.05, 0.06, 0.005, new TrapezoidProfile.Constraints(3, 1));
+
+    ChassisSpeeds appliedSpeed = new ChassisSpeeds();
+    ChassisSpeeds littleIttyBittyBabyAdjust = new ChassisSpeeds();
+    AnalogInput sensor = new AnalogInput(0);
 
     public static Controls instance = null;
     public static Controls getInstance() {
@@ -63,27 +84,19 @@ public class Controls extends Subsystem {
         timer.restart();
         trajectoryGenerated = false;
         pigeon.reset();
+        xController.setTolerance(.005);
+        yController.setTolerance(.03);
+        rotController.setTolerance(2);
+        littleIttyBittyBabyAdjust.vxMetersPerSecond = 1;
     }
 
     public void update() {
         swerve.swerve(joystick);
-        // if(joystick.a().getAsBoolean()) {
-        //     if(!trajectoryGenerated) {
-        //         generateTrajectory();
-        //         trajectoryGenerated = true;
-        //         swerve.followPathCommand(path);
-        //     } else {}
-        //     // if(trajectory.getTotalTimeSeconds() >= timer.get()) {
-        //     //     trajectoryGenerated = false;
-        //     // }
-        // }
-        // if(joystick.b().getAsBoolean()) {
-        //     elevator.elevatorUp();
-        // } else if(joystick.x().getAsBoolean()) {
-        //     elevator.elevatorDown();
-        // } else {
-        //     elevator.elevatorStop();
-        // }
+        if(joystick.b().getAsBoolean()) {
+            alignRight();
+        } else if(joystick.x().getAsBoolean()) {
+            alignLeft();
+        }
         if (joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
         } else if (joystick.leftTrigger().getAsBoolean()) {
@@ -91,88 +104,69 @@ public class Controls extends Subsystem {
         } else {
             shooter.stopShooter();
         }
-        if(joystick.leftBumper().getAsBoolean()) {
-            shooter.left();
-        } else if (joystick.rightBumper().getAsBoolean()) {
-            shooter.right();
-        } else {
-            shooter.stopSlide();
+        if(buttonBoard.getRawButton(1)) {
+            elevator.raiseL3();
+        }
+        if(buttonBoard.getRawButton(2)) {
+            elevator.raiseL2();
+        }
+        if(buttonBoard.getRawButton(3)) {
+            elevator.resetElevator();
         }
         if(joystick.a().getAsBoolean()) {
             elevator.raiseL2();
         } else if(joystick.start().getAsBoolean()) {
             elevator.resetElevator();
         }
+        if(joystick.leftBumper().getAsBoolean()) {
+            shooter.down();
+        } else if(joystick.rightBumper().getAsBoolean()) {
+            shooter.up();
+        }
     }
 
-    // public void generateTrajectory() {
-    //     rot = new Rotation2d(yaw);
-    //     rot2 = new Rotation2d();
-    //     desPos = new Pose2d(0, 0.2, rot2);
-    //     curPos = new Pose2d(poseX, poseY, rot);
-    //     mid = new Translation2d((poseX / 2), (poseY / 2));
-    //     config = new TrajectoryConfig(3, 2);
-    //     trajectory = TrajectoryGenerator.generateTrajectory(curPos, List.of(mid), desPos, config);
-    //     System.out.println("Trajectory: " + trajectory.sample(timer.get()));
-    // }
-
-    // public void generateTrajectory() {
-    //     rot = new Rotation2d(yaw);
-    //     rot2 = new Rotation2d();
-    //     desPos = new Pose2d(0, 0.2, rot);
-    //     curPos = new Pose2d(poseX, poseY, rot);
-    //     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-    //         curPos,
-    //         desPos
-    //     );
-    //     PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0);
-    //     path = new PathPlannerPath(
-    //         waypoints, constraints, null, new GoalEndState(0.0, rot2));
-    // }
-
-    public void generateTrajectory() {
-                // Create a list of waypoints from poses. Each pose represents one waypoint.
-        // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
-        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
-            new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
-            new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90))
-        );
-
-        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI); // The constraints for this path.
-        // PathConstraints constraints = PathConstraints.unlimitedConstraints(12.0); // You can also use unlimited constraints, only limited by motor torque and nominal battery voltage
-
-        // Create the path using the waypoints created above
-        path = new PathPlannerPath(
-            waypoints,
-            constraints,
-            null, // The ideal starting state, this is only relevant for pre-planned paths, so can be null for on-the-fly paths.
-            new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can set a holonomic rotation here. If using a differential drivetrain, the rotation will have no effect.
-        );
-
-        // Prevent the path from being flipped if the coordinates are already correct
-        path.preventFlipping = true;
+    public double getXError() {
+        return xController.getPositionError();
     }
 
-    // public void followTrajectory() {
-    //     Rotation2d newRot = new Rotation2d(yaw);
-    //     Pose2d curPos2 = new Pose2d(poseX, poseY, newRot);
-    //     System.out.println(trajectory);
-    //     vel = controller.calculate(curPos2, trajectory.sample(timer.get()), rot2);
-    //     System.out.println(curPos2);
-    //     swerve.adjust(vel);
-    // }
+    public double getYError() {
+        return yController.getPositionError();
+    }
+
+    public double getYVelocity() {
+        return yController.getSetpoint().velocity;
+    }
+
+    public void alignRight() {
+        if(limelight.getLock()) {
+            appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
+            appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+            appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+            swerve.adjust(appliedSpeed);
+        }
+    }
+
+    public void alignLeft() {
+        if(limelight.getLock()) {
+            appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
+            appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+            appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+            swerve.adjust(appliedSpeed);
+        }
+    }
 
     public void readPeriodicInputs() {
         pose = limelight.getPose();
-        poseX = pose[0];
+        poseX = ((-1) * pose[0]);
         poseY = pose[2];
-        yaw = pose[4];
+        yaw = ((-1) * pose[4]);
         d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }
 
     @Override
-    public void outputTelemetry() {}
+    public void outputTelemetry() {
+        System.out.println(sensor.getAverageVoltage());
+    }
 
     @Override
     public void stop() {}

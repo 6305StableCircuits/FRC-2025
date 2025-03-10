@@ -16,8 +16,8 @@ public class Shooter extends Subsystem {
     public SparkMax makena;
     public SparkMax sabrina;
     public RelativeEncoder encoder;
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(0.5, 0.25);
-    private final ProfiledPIDController sabrinaController = new ProfiledPIDController(0.1, 0, 0, constraints);
+    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(15, 15);
+    private final ProfiledPIDController sabrinaController = new ProfiledPIDController(3, 0.3, 0.02, constraints);
     private static Shooter instance = null;
     public static Shooter getInstance() {
         if (instance == null) {
@@ -42,24 +42,16 @@ public class Shooter extends Subsystem {
     public void reverse() {
         sasha.set(-0.4);
         makena.set(0.4);
-        // intaking = true;
-    }
-    
-    public void right() {
-        sabrina.set(0.15);
-    }
+  }    
 
-    public void left() {
-        sabrina.set(-0.15);
-    }
-
-    public void center() {
-        sabrinaController.setGoal(0);
+    public void down() {
+        sabrinaController.setGoal(-25);
         sabrina.setVoltage(sabrinaController.calculate(encoder.getPosition()));
     }
 
-    public void stopSlide() {
-        sabrina.stopMotor();
+    public void up() {
+        sabrinaController.setGoal(0);
+        sabrina.setVoltage(sabrinaController.calculate(encoder.getPosition()));
     }
 
     public void stopShooter() {
