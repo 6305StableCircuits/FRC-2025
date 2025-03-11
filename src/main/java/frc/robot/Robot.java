@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SubsystemManager;
 import frc.robot.subsystems.drive.Controls;
 import frc.robot.subsystems.drive.Drive;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
   Drive drive;
   Controls controls;
   Elevator elevator;
+  Shooter shooter;
   
   public Robot() {
     // Instantiate all Subsystems
@@ -36,6 +38,7 @@ public class Robot extends TimedRobot {
     drive = Drive.getInstance();
     controls = Controls.getInstance();
     elevator = Elevator.getInstance();
+    shooter = Shooter.getInstance();
 
     m_robotContainer = new RobotContainer();
 
@@ -46,7 +49,8 @@ public class Robot extends TimedRobot {
       leds,
       drive,
       controls,
-      elevator
+      elevator,
+      shooter
     ));
     FollowPathCommand.warmupCommand().schedule();
   }

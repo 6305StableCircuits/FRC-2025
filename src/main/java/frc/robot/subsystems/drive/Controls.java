@@ -13,6 +13,7 @@ import edu.wpi.first.hal.PWMJNI;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.States;
 //import frc.robot.commands.L2.L2Left;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Shooter;
@@ -70,8 +72,12 @@ public class Controls extends Subsystem {
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
     ChassisSpeeds littleIttyBittyBabyAdjust = new ChassisSpeeds();
+
     AnalogInput sensor = new AnalogInput(0);
 
+    boolean intake = false;
+    double prevReadout = 0;
+    boolean runningIntake = false;
     public static Controls instance = null;
     public static Controls getInstance() {
         if(instance == null) {
@@ -97,13 +103,18 @@ public class Controls extends Subsystem {
         } else if(joystick.x().getAsBoolean()) {
             alignLeft();
         }
-        if (joystick.rightTrigger().getAsBoolean()) {
+        if(joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
-        } else if (joystick.leftTrigger().getAsBoolean()) {
+        } else if(joystick.leftTrigger().getAsBoolean()) {
             shooter.reverse();
         } else {
             shooter.stopShooter();
         }
+        // if(joystick.rightTrigger().getAsBoolean() && (States.state == "canIntake" || States.state == "intaking")) {
+        //     shooter.forward();
+        // } else {
+        //     shooter.stopShooter();
+        // }
         if(buttonBoard.getRawButton(1)) {
             elevator.raiseL3();
         }
@@ -165,7 +176,7 @@ public class Controls extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        System.out.println(sensor.getAverageVoltage());
+        //System.out.println(sensor.getVoltage());
     }
 
     @Override

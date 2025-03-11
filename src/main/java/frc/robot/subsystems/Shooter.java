@@ -7,9 +7,13 @@ import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.States;
 
 public class Shooter extends Subsystem {
     public SparkMax sasha;
@@ -19,6 +23,8 @@ public class Shooter extends Subsystem {
     private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(15, 15);
     private final ProfiledPIDController sabrinaController = new ProfiledPIDController(3, 0.3, 0.02, constraints);
     private static Shooter instance = null;
+    public boolean bool;
+    public double x,y;
     public static Shooter getInstance() {
         if (instance == null) {
             instance = new Shooter();
@@ -35,8 +41,9 @@ public class Shooter extends Subsystem {
     }
 
     public void forward() {
-        sasha.set(0.6);
-        makena.set(-0.5);
+        sasha.set(0.3);
+        makena.set(-0.3);
+        bool = true;
     }
 
     public void reverse() {
@@ -57,26 +64,19 @@ public class Shooter extends Subsystem {
     public void stopShooter() {
         sasha.stopMotor();
         makena.stopMotor();
-        // intaking = false;
+        bool = false;
     }
 
-    // public double filterData = 0;
-    // public double filterData2 = 0;
-    // public boolean intaking = false;
-
     public void update(){
-        // SmartDashboard.putNumber("Current Amperage:", sasha.getOutputCurrent());
-        // if(intaking){
-        //     LinearFilter filter = LinearFilter.movingAverage(5);
-        //     filterData = filter.calculate(sasha.getOutputCurrent());
-        //     if(sasha.getOutputCurrent() > 9){
-        //         stopShooter();
-        //     }
-        //     // if((filterData - filterData2) < 0 && sasha.getOutputCurrent() < 12 && intaking){
-        //     //     //pipe(?) held
-        //     // }
-        //     filterData2 = filterData;
+        LinearFilter filter = LinearFilter.movingAverage(5);
+        Debouncer debouncer = new Debouncer(1, DebounceType.kRising);
+        if(bool) {
+            x = filter.calculate((sasha.getOutputCurrent() + makena.getOutputCurrent()) / 2);
+            if(debouncer.calculate(x > 28)) {
+                States.setState("coralHeld");
+            }
         }
+    }
 
     @Override
     public void outputTelemetry() {}
