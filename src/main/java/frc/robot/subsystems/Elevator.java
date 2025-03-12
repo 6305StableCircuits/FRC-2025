@@ -76,6 +76,10 @@ public class Elevator extends Subsystem {
         return 0.225 * heightRequest;
     }
 
+    public double getRotations() {
+        return hunter.getPosition().getValueAsDouble();
+    }
+
     public void resetElevator() {
         hunter.setControl(hunterRequest.withPosition(0).withSlot(0));
         garrett.setControl(garrettRequest);

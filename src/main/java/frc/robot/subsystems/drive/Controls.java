@@ -97,14 +97,25 @@ public class Controls extends Subsystem {
 
     public void update() {
         swerve.swerve(joystick);
-        if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(8)) {
-            L3Right();
-        } else if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(5)) {
-            L3Left();
-        } else if(buttonBoard.getRawButton(2) && buttonBoard.getRawButton(8)) {
-            L2Left();
-        } else if(buttonBoard.getRawButton(2) & buttonBoard.getRawButton(5)) {
+        // if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(8)) {
+        //     L3Right();
+        // } else if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(5)) {
+        //     L3Left();
+        // } else if(buttonBoard.getRawButton(2) && buttonBoard.getRawButton(8)) {
+        //     L2Left();
+        // } else if(buttonBoard.getRawButton(2) & buttonBoard.getRawButton(5)) {
+        //     L2Right();
+        if(buttonBoard.getRawButton(8)) {
             L2Right();
+        } else if(buttonBoard.getRawButton(5)) {
+            L2Left();
+        }
+        if(buttonBoard.getRawButton(1)) {
+            elevator.raiseL3();
+        } else if(buttonBoard.getRawButton(2)) {
+            elevator.raiseL2();
+        } else if(buttonBoard.getRawButton(3)) {
+            elevator.resetElevator();
         }
         if(joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
@@ -133,6 +144,14 @@ public class Controls extends Subsystem {
                 elevator.raiseL3();
             }
             prevVel = yController.getSetpoint().velocity;
+            if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
+                shooter.quickShoot();
+                elevator.resetElevator();
+                prevVel = 0;
+            }
+            if(elevator.getRotations() <= 28) {
+                shooter.stopShooter();
+            }
         }
     }
 
@@ -146,6 +165,14 @@ public class Controls extends Subsystem {
                 elevator.raiseL3();
             }
             prevVel = yController.getSetpoint().velocity;
+            if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
+                shooter.quickShoot();
+                elevator.resetElevator();
+                prevVel = 0;
+            }
+            if(elevator.getRotations() <= 28) {
+                shooter.stopShooter();
+            }
         }
     }
 
@@ -154,9 +181,16 @@ public class Controls extends Subsystem {
         appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         swerve.adjust(appliedSpeed);
-        if(yController.getPositionError() < 0.05) {
-            elevator.raiseL2();
-        }
+        // if(yController.getPositionError() < 0.05) {
+        //     elevator.raiseL2();
+        // }
+        // if(15.1 <= elevator.getRotations() && elevator.getRotations() >= 15.9) {
+        //     shooter.quickShoot();
+        //     elevator.resetElevator();
+        // }
+        // if(elevator.getRotations() <= 14) {
+        //     shooter.stopShooter();
+        // }
     }
 
     public void L2Left() {
@@ -167,6 +201,13 @@ public class Controls extends Subsystem {
         if(yController.getPositionError() < 0.05) {
             elevator.raiseL2();
         }
+        // if(15.1 <= elevator.getRotations() && elevator.getRotations() >= 15.9) {
+        //     shooter.quickShoot();
+        //     elevator.resetElevator();
+        // }
+        // if(elevator.getRotations() <= 14) {
+        //     shooter.stopShooter();
+        // }
     }
 
     public void readPeriodicInputs() {

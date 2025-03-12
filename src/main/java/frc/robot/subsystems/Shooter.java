@@ -46,6 +46,11 @@ public class Shooter extends Subsystem {
         bool = true;
     }
 
+    public void quickShoot() {
+        sasha.set(0.8);
+        makena.set(-0.7);
+    }
+
     public void reverse() {
         sasha.set(-0.4);
         makena.set(0.4);
