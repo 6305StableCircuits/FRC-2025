@@ -62,12 +62,11 @@ public class Elevator extends Subsystem {
         mm.withMotionMagicCruiseVelocity(RotationsPerSecond.of(80))
         .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(80)).withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(90));
         Slot0Configs slot0 = hunterConfig.Slot0;
-        slot0.kP = 21; // was 72
-        slot0.kI = 0.5; // was 2.0
-        slot0.kG = 0.75; // was 0.4
-        slot0.kV = 1.46; // was 3.11
-        slot0.kA = 0.5;
-        slot0.kS = 0; // was 0.2
+        slot0.kP = 21; // was 21
+        slot0.kI = 0.5; // was 0.5
+        slot0.kG = 0.77; // was 0.75
+        slot0.kV = 1.46; // was 1.46
+        slot0.kA = 0.5; // was 0.5
 
         limitSwitch = new DigitalInput(0);
         hunter.getConfigurator().apply(hunterConfig);

@@ -68,10 +68,10 @@ public class Controls extends Subsystem {
     ProfiledPIDController xController = new ProfiledPIDController(0.96, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
     ProfiledPIDController yController = new ProfiledPIDController(0.96, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
     ProfiledPIDController rotController = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(3, 1));
-    //ProfiledPIDController rotController = new ProfiledPIDController(0.05, 0.06, 0.005, new TrapezoidProfile.Constraints(3, 1));
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
-    ChassisSpeeds littleIttyBittyBabyAdjust = new ChassisSpeeds();
+
+    double prevVel = 0;
 
     AnalogInput sensor = new AnalogInput(0);
 
@@ -93,15 +93,18 @@ public class Controls extends Subsystem {
         xController.setTolerance(.005);
         yController.setTolerance(.03);
         rotController.setTolerance(2);
-        littleIttyBittyBabyAdjust.vxMetersPerSecond = 1;
     }
 
     public void update() {
         swerve.swerve(joystick);
-        if(joystick.b().getAsBoolean()) {
-            alignRight();
-        } else if(joystick.x().getAsBoolean()) {
-            alignLeft();
+        if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(8)) {
+            L3Right();
+        } else if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(5)) {
+            L3Left();
+        } else if(buttonBoard.getRawButton(2) && buttonBoard.getRawButton(8)) {
+            L2Left();
+        } else if(buttonBoard.getRawButton(2) & buttonBoard.getRawButton(5)) {
+            L2Right();
         }
         if(joystick.rightTrigger().getAsBoolean()) {
             shooter.forward();
@@ -110,23 +113,7 @@ public class Controls extends Subsystem {
         } else {
             shooter.stopShooter();
         }
-        // if(joystick.rightTrigger().getAsBoolean() && (States.state == "canIntake" || States.state == "intaking")) {
-        //     shooter.forward();
-        // } else {
-        //     shooter.stopShooter();
-        // }
-        if(buttonBoard.getRawButton(1)) {
-            elevator.raiseL3();
-        }
-        if(buttonBoard.getRawButton(2)) {
-            elevator.raiseL2();
-        }
         if(buttonBoard.getRawButton(3)) {
-            elevator.resetElevator();
-        }
-        if(joystick.a().getAsBoolean()) {
-            elevator.raiseL2();
-        } else if(joystick.start().getAsBoolean()) {
             elevator.resetElevator();
         }
         if(joystick.leftBumper().getAsBoolean()) {
@@ -136,33 +123,49 @@ public class Controls extends Subsystem {
         }
     }
 
-    public double getXError() {
-        return xController.getPositionError();
-    }
-
-    public double getYError() {
-        return yController.getPositionError();
-    }
-
-    public double getYVelocity() {
-        return yController.getSetpoint().velocity;
-    }
-
-    public void alignRight() {
+    public void L3Right() {
         if(limelight.getLock()) {
             appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
             appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
             appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
             swerve.adjust(appliedSpeed);
+            if(yController.getSetpoint().velocity < prevVel) {
+                elevator.raiseL3();
+            }
+            prevVel = yController.getSetpoint().velocity;
         }
     }
 
-    public void alignLeft() {
+    public void L3Left() {
         if(limelight.getLock()) {
             appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
             appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
             appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
             swerve.adjust(appliedSpeed);
+            if(yController.getSetpoint().velocity < prevVel) {
+                elevator.raiseL3();
+            }
+            prevVel = yController.getSetpoint().velocity;
+        }
+    }
+
+    public void L2Right() {
+        appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
+        appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+        appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+        swerve.adjust(appliedSpeed);
+        if(yController.getPositionError() < 0.05) {
+            elevator.raiseL2();
+        }
+    }
+
+    public void L2Left() {
+        appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
+        appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+        appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+        swerve.adjust(appliedSpeed);
+        if(yController.getPositionError() < 0.05) {
+            elevator.raiseL2();
         }
     }
 
