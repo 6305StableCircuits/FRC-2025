@@ -198,9 +198,9 @@ public class Controls extends Subsystem {
         appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         swerve.adjust(appliedSpeed);
-        if(yController.getPositionError() < 0.05) {
-            elevator.raiseL2();
-        }
+        // if(yController.getPositionError() < 0.05) {
+        //     elevator.raiseL2();
+        // }
         // if(15.1 <= elevator.getRotations() && elevator.getRotations() >= 15.9) {
         //     shooter.quickShoot();
         //     elevator.resetElevator();

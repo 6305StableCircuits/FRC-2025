@@ -46,7 +46,7 @@ public class Drive extends Subsystem {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     @SuppressWarnings("unused")
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.ApplyFieldSpeeds swerveroni = new SwerveRequest.ApplyFieldSpeeds();
+    private final SwerveRequest.ApplyRobotSpeeds swerveroni = new SwerveRequest.ApplyRobotSpeeds();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
