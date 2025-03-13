@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogOutput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DigitalSource;
 import edu.wpi.first.wpilibj.DutyCycle;
@@ -73,7 +74,7 @@ public class Controls extends Subsystem {
 
     double prevVel = 0;
 
-    AnalogInput sensor = new AnalogInput(0);
+    DigitalInput beamBreak = new DigitalInput(0);
 
     boolean intake = false;
     double prevReadout = 0;
@@ -105,6 +106,12 @@ public class Controls extends Subsystem {
         //     L2Left();
         // } else if(buttonBoard.getRawButton(2) & buttonBoard.getRawButton(5)) {
         //     L2Right();
+        if(States.state == "canIntake" && beamBreak.get() == false) {
+            States.setState("coralHeld");
+        }
+        if(States.state == "coralHeld" && beamBreak.get() == true) {
+            States.setState("canIntake");
+        }
         if(buttonBoard.getRawButton(8)) {
             L2Right();
         } else if(buttonBoard.getRawButton(5)) {
@@ -117,10 +124,10 @@ public class Controls extends Subsystem {
         } else if(buttonBoard.getRawButton(3)) {
             elevator.resetElevator();
         }
-        if(joystick.rightTrigger().getAsBoolean()) {
+        if(buttonBoard.getRawButton(6) && States.state == "canIntake") {
+            shooter.intake();
+        } else if(buttonBoard.getRawButton(9)) {
             shooter.forward();
-        } else if(joystick.leftTrigger().getAsBoolean()) {
-            shooter.reverse();
         } else {
             shooter.stopShooter();
         }
@@ -220,7 +227,7 @@ public class Controls extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        //System.out.println(sensor.getVoltage());
+        System.out.println(beamBreak.get());
     }
 
     @Override

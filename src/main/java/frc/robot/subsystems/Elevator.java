@@ -33,7 +33,6 @@ public class Elevator extends Subsystem {
     public ProfiledPIDController garrettController;
     public ElevatorFeedforward hunterFeedForward;
     public ElevatorFeedforward garrettFeedForward;
-    public DigitalInput limitSwitch;
 
     //final TrapezoidProfile hunterProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(0.5, 0.0625));
     final MotionMagicVoltage hunterRequest = new MotionMagicVoltage(0);
@@ -68,7 +67,6 @@ public class Elevator extends Subsystem {
         slot0.kV = 1.46; // was 1.46
         slot0.kA = 0.5; // was 0.5
 
-        limitSwitch = new DigitalInput(0);
         hunter.getConfigurator().apply(hunterConfig);
     }
 
@@ -85,13 +83,18 @@ public class Elevator extends Subsystem {
         garrett.setControl(garrettRequest);
     }
 
+    public void raiseL1() {
+        hunter.setControl(hunterRequest.withPosition(18).withSlot(0)); // 15.5
+        garrett.setControl(garrettRequest);
+    }
+
     public void raiseL2() {
-        hunter.setControl(hunterRequest.withPosition(15.5).withSlot(0)); // 15.5
+        hunter.setControl(hunterRequest.withPosition(19.5).withSlot(0)); // 15.5
         garrett.setControl(garrettRequest);
     }
 
     public void raiseL3() {
-        hunter.setControl(hunterRequest.withPosition(28.25).withSlot(0)); // 28.25
+        hunter.setControl(hunterRequest.withPosition(32.25).withSlot(0)); // 28.25
         garrett.setControl(garrettRequest);
     }
 

@@ -1,7 +1,7 @@
 package frc.robot;
 
 public class States {
-    public static String state = "canIntake";
+    public static String state = "coralHeld";
     public static boolean manualMode = true;
 
     public static void setState(String input) {

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -47,6 +48,7 @@ public class Drive extends Subsystem {
     @SuppressWarnings("unused")
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.ApplyRobotSpeeds swerveroni = new SwerveRequest.ApplyRobotSpeeds();
+    private final SwerveRequest.RobotCentric swerveroni2 = new SwerveRequest.RobotCentric();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -65,12 +67,12 @@ public class Drive extends Subsystem {
     // Configure AutoBuilder last
     AutoBuilder.configure(
             () -> drivetrain.getState().Pose, // Robot pose supplier
-            (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has a starting pose)
+            (pose) -> drivetrain.seedFieldCentric(), // Method to reset odometry (will be called if your auto has a starting pose)
             () -> drivetrain.getState().Speeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                    new PIDConstants(1.5, 0.073, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.1, 0.0) // Rotation PID constants
             ),
             Constants.robotConfig, // The robot configuration
             () -> {
@@ -86,6 +88,10 @@ public class Drive extends Subsystem {
             },
             drivetrain // Reference to this subsystem to set requirements
     );
+    }
+
+    public Command getAutoPath(String pathName) {
+        return new PathPlannerAuto(pathName);
     }
 
     public void swerve(CommandXboxController joystick) {

@@ -1,25 +1,27 @@
 {
-  "robotWidth": 0.864,
-  "robotLength": 0.864,
+  "robotWidth": 0.889,
+  "robotLength": 0.889,
   "holonomicMode": true,
   "pathFolders": [
+    "AlgaePaths",
     "CoralPaths",
-    "AlgaePaths"
+    "RealPaths"
   ],
   "autoFolders": [
+    "AlgaeAutos",
     "CoralAutos",
-    "AlgaeAutos"
+    "RealAutos"
   ],
-  "defaultMaxVel": 6.0,
-  "defaultMaxAccel": 6.0,
-  "defaultMaxAngVel": 540.0,
-  "defaultMaxAngAccel": 2048.0,
+  "defaultMaxVel": 0.2,
+  "defaultMaxAccel": 0.2,
+  "defaultMaxAngVel": 420.0,
+  "defaultMaxAngAccel": 1687.0,
   "defaultNominalVoltage": 12.0,
   "robotMass": 44.0,
   "robotMOI": 6.403,
   "robotTrackwidth": 0.546,
   "driveWheelRadius": 0.051,
-  "driveGearing": 7.3636,
+  "driveGearing": 5.96,
   "maxDriveSpeed": 5.54,
   "driveMotorType": "krakenX60",
   "driveCurrentLimit": 40.0,

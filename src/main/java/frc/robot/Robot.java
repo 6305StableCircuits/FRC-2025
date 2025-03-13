@@ -9,6 +9,9 @@ import java.util.Arrays;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.AutoElevatorDown;
+import frc.robot.commands.AutoL2;
+import frc.robot.commands.AutoShoot;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
@@ -16,6 +19,8 @@ import frc.robot.subsystems.SubsystemManager;
 import frc.robot.subsystems.drive.Controls;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Limelight;
+
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 public class Robot extends TimedRobot {
@@ -33,12 +38,15 @@ public class Robot extends TimedRobot {
   
   public Robot() {
     // Instantiate all Subsystems
-    limelight = Limelight.getInstance();
-    leds = LEDs.getInstance();
-    drive = Drive.getInstance();
     controls = Controls.getInstance();
     elevator = Elevator.getInstance();
     shooter = Shooter.getInstance();
+    NamedCommands.registerCommand("L2", new AutoL2());
+    NamedCommands.registerCommand("ElevatorDown", new AutoElevatorDown());
+    NamedCommands.registerCommand("AutoShoot", new AutoShoot());
+    limelight = Limelight.getInstance();
+    leds = LEDs.getInstance();
+    drive = Drive.getInstance();
 
     m_robotContainer = new RobotContainer();
 
