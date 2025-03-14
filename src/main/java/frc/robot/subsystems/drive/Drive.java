@@ -51,6 +51,7 @@ public class Drive extends Subsystem {
     private final SwerveRequest.RobotCentric swerveroni2 = new SwerveRequest.RobotCentric();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+    RobotConfig config;
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     
@@ -64,6 +65,16 @@ public class Drive extends Subsystem {
 
     public Drive() {
 
+    // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+
+
     // Configure AutoBuilder last
     AutoBuilder.configure(
             () -> drivetrain.getState().Pose, // Robot pose supplier
@@ -74,7 +85,7 @@ public class Drive extends Subsystem {
                     new PIDConstants(1.5, 0.073, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.1, 0.0) // Rotation PID constants
             ),
-            Constants.robotConfig, // The robot configuration
+            config, // The robot configuration
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
               // This will flip the path being followed to the red side of the field.

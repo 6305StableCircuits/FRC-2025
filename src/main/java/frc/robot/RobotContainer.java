@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,11 +27,15 @@ public class RobotContainer {
 
     Drive drive = Drive.getInstance();
 
-    public RobotContainer() {}
+    private final SendableChooser<Command> autoChooser;
 
-    private Command runAuto = drive.getAutoPath("1CoralL2");
+    public RobotContainer() {
+        autoChooser = AutoBuilder.buildAutoChooser("1CoralL2");
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+    }
 
     public Command getAutonomousCommand() {
-        return runAuto;
+        return autoChooser.getSelected();
     }
 }

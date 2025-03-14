@@ -9,7 +9,7 @@ public class AutoL2 extends Command {
 
     public void execute() {
         elevator.raiseL2();
-        while(elevator.getRotations() < 15.35) {
+        while(elevator.getRotations() < 19.35) {
             continue;
         }
     }

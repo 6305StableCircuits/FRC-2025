@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.54160441742026,
-        "y": 2.51232909471566
+        "x": 5.2804023217107,
+        "y": 2.631286487856092
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 2.67
       },
       "prevControl": {
-        "x": 5.909875613857443,
-        "y": 2.517035410448746
+        "x": 5.938340115244292,
+        "y": 2.638577305514529
       },
       "nextControl": null,
       "isLocked": false,
@@ -71,7 +71,7 @@
   "folder": "RealPaths",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

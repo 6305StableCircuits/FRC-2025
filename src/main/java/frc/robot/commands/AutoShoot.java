@@ -13,7 +13,7 @@ public class AutoShoot extends Command {
     public void execute() {
         shooter.forward();
         try {
-            TimeUnit.MILLISECONDS.sleep(200);
+            TimeUnit.MILLISECONDS.sleep(300);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
