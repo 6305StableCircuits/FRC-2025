@@ -107,8 +107,12 @@ public class Drive extends Subsystem {
 
     public void resetHeading(CommandXboxController joystick) {}
 
-    public void adjust(ChassisSpeeds speeds) {
-        drivetrain.setControl(swerveroni.withSpeeds(speeds));
+    // public void adjust(ChassisSpeeds speeds) {
+    //     drivetrain.setControl(swerveroni.withSpeeds(speeds));
+    // }
+
+    public void adjust(double velX, double velY, double velOmega) {
+        drivetrain.setControl(swerveroni2.withVelocityX(velX).withVelocityY(velY).withRotationalRate(velOmega));
     }
 
     public void sysIDFwdDynamic() {

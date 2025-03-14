@@ -73,6 +73,9 @@ public class Controls extends Subsystem {
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
 
     double prevVel = 0;
+    double velX = 0;
+    double velY = 0;
+    double velOmega = 0;
 
     DigitalInput beamBreak = new DigitalInput(0);
 
@@ -141,53 +144,57 @@ public class Controls extends Subsystem {
         }
     }
 
-    public void L3Right() {
-        if(limelight.getLock()) {
-            appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
-            appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
-            appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
-            swerve.adjust(appliedSpeed);
-            if(yController.getSetpoint().velocity < prevVel) {
-                elevator.raiseL3();
-            }
-            prevVel = yController.getSetpoint().velocity;
-            if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
-                shooter.quickShoot();
-                elevator.resetElevator();
-                prevVel = 0;
-            }
-            if(elevator.getRotations() <= 28) {
-                shooter.stopShooter();
-            }
-        }
-    }
+    // public void L3Right() {
+    //     if(limelight.getLock()) {
+    //         appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
+    //         appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+    //         appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+    //         swerve.adjust();
+    //         if(yController.getSetpoint().velocity < prevVel) {
+    //             elevator.raiseL3();
+    //         }
+    //         prevVel = yController.getSetpoint().velocity;
+    //         if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
+    //             shooter.quickShoot();
+    //             elevator.resetElevator();
+    //             prevVel = 0;
+    //         }
+    //         if(elevator.getRotations() <= 28) {
+    //             shooter.stopShooter();
+    //         }
+    //     }
+    // }
 
-    public void L3Left() {
-        if(limelight.getLock()) {
-            appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
-            appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
-            appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
-            swerve.adjust(appliedSpeed);
-            if(yController.getSetpoint().velocity < prevVel) {
-                elevator.raiseL3();
-            }
-            prevVel = yController.getSetpoint().velocity;
-            if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
-                shooter.quickShoot();
-                elevator.resetElevator();
-                prevVel = 0;
-            }
-            if(elevator.getRotations() <= 28) {
-                shooter.stopShooter();
-            }
-        }
-    }
+    // public void L3Left() {
+    //     if(limelight.getLock()) {
+    //         appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
+    //         appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+    //         appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+    //         swerve.adjust(appliedSpeed);
+    //         if(yController.getSetpoint().velocity < prevVel) {
+    //             elevator.raiseL3();
+    //         }
+    //         prevVel = yController.getSetpoint().velocity;
+    //         if(28.1 <= elevator.getRotations() && elevator.getRotations() >= 28.4) {
+    //             shooter.quickShoot();
+    //             elevator.resetElevator();
+    //             prevVel = 0;
+    //         }
+    //         if(elevator.getRotations() <= 28) {
+    //             shooter.stopShooter();
+    //         }
+    //     }
+    // }
 
     public void L2Right() {
-        appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
-        appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
-        appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
-        swerve.adjust(appliedSpeed);
+        // appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, -0.1651);
+        // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+        // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+        // swerve.adjust(appliedSpeed);
+        velY = xController.calculate(poseX, -0.1651);
+        velX = yController.calculate(poseY, -0.435);
+        velOmega = rotController.calculate(yaw, 0);
+        swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
         // }
@@ -201,10 +208,14 @@ public class Controls extends Subsystem {
     }
 
     public void L2Left() {
-        appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
-        appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
-        appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
-        swerve.adjust(appliedSpeed);
+        // appliedSpeed.vyMetersPerSecond = xController.calculate(poseX, 0.1691);
+        // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
+        // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
+        // swerve.adjust(appliedSpeed);
+        velY = xController.calculate(poseX, -0.1651);
+        velX = yController.calculate(poseY, -0.435);
+        velOmega = rotController.calculate(yaw, 0);
+        swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
         // }

@@ -54,8 +54,8 @@
   ],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.2,
-    "maxAcceleration": 0.2,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
     "maxAngularVelocity": 420.0,
     "maxAngularAcceleration": 1687.0,
     "nominalVoltage": 12.0,

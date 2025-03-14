@@ -20,8 +20,8 @@ public class Shooter extends Subsystem {
     public SparkMax makena;
     public SparkMax sabrina;
     public RelativeEncoder encoder;
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(15, 15);
-    private final ProfiledPIDController sabrinaController = new ProfiledPIDController(3, 0.3, 0.02, constraints);
+    // private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(15, 15);
+    // private final ProfiledPIDController sabrinaController = new ProfiledPIDController(3, 0.3, 0.02, constraints);
     private static Shooter instance = null;
     public boolean bool;
     public double x,y;
@@ -62,13 +62,15 @@ public class Shooter extends Subsystem {
   }    
 
     public void down() {
-        sabrinaController.setGoal(-25);
-        sabrina.setVoltage(sabrinaController.calculate(encoder.getPosition()));
+        if(encoder.getPosition() > -22) {
+            sabrina.set(-0.2);
+        }
     }
 
     public void up() {
-        sabrinaController.setGoal(0);
-        sabrina.setVoltage(sabrinaController.calculate(encoder.getPosition()));
+        if(encoder.getPosition() < -1.5) {
+            sabrina.set(0.2);
+        }
     }
 
     public void stopShooter() {
@@ -77,16 +79,7 @@ public class Shooter extends Subsystem {
         bool = false;
     }
 
-    public void update(){
-        LinearFilter filter = LinearFilter.movingAverage(5);
-        Debouncer debouncer = new Debouncer(1, DebounceType.kRising);
-        if(bool) {
-            x = filter.calculate((sasha.getOutputCurrent() + makena.getOutputCurrent()) / 2);
-            if(debouncer.calculate(x > 28)) {
-                States.setState("coralHeld");
-            }
-        }
-    }
+    public void update() {}
 
     @Override
     public void outputTelemetry() {}

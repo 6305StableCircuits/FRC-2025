@@ -12,8 +12,8 @@
     "CoralAutos",
     "RealAutos"
   ],
-  "defaultMaxVel": 0.2,
-  "defaultMaxAccel": 0.2,
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 1.0,
   "defaultMaxAngVel": 420.0,
   "defaultMaxAngAccel": 1687.0,
   "defaultNominalVoltage": 12.0,
