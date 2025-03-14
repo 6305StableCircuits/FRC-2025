@@ -62,14 +62,18 @@ public class Shooter extends Subsystem {
   }    
 
     public void down() {
-        if(encoder.getPosition() > -22) {
+        if(encoder.getPosition() > -15) {
             sabrina.set(-0.2);
+        } else {
+            sabrina.stopMotor();
         }
     }
 
     public void up() {
-        if(encoder.getPosition() < -1.5) {
+        if(encoder.getPosition() < -3) {
             sabrina.set(0.2);
+        } else {
+            sabrina.stopMotor();
         }
     }
 
@@ -79,7 +83,9 @@ public class Shooter extends Subsystem {
         bool = false;
     }
 
-    public void update() {}
+    public void update() {
+        System.out.println(encoder.getPosition());
+    }
 
     @Override
     public void outputTelemetry() {}

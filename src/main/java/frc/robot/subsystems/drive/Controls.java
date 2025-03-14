@@ -137,10 +137,12 @@ public class Controls extends Subsystem {
         if(buttonBoard.getRawButton(3)) {
             elevator.resetElevator();
         }
-        if(joystick.leftBumper().getAsBoolean()) {
+        if(buttonBoard.getRawButton(4)) {
             shooter.down();
-        } else if(joystick.rightBumper().getAsBoolean()) {
+        } else if(buttonBoard.getRawButton(7)) {
             shooter.up();
+        } else {
+            shooter.sabrina.stopMotor();
         }
     }
 
