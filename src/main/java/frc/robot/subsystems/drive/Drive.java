@@ -82,8 +82,8 @@ public class Drive extends Subsystem {
             () -> drivetrain.getState().Speeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(1.5, 0.073, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.1, 0.0) // Rotation PID constants
+                    new PIDConstants(0.2, 0.0, 0.0), // Translation PID constants 1.5 0.073 0.0
+                    new PIDConstants(0.8, 0.0, 0.0) // Rotation PID constants 5.0 0.1 0.0
             ),
             config, // The robot configuration
             () -> {
@@ -101,10 +101,6 @@ public class Drive extends Subsystem {
     );
     }
 
-    public Command getAutoPath(String pathName) {
-        return new PathPlannerAuto(pathName);
-    }
-
     public void swerve(CommandXboxController joystick) {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -115,8 +111,6 @@ public class Drive extends Subsystem {
             )
         );
     }
-
-    public void resetHeading(CommandXboxController joystick) {}
 
     // public void adjust(ChassisSpeeds speeds) {
     //     drivetrain.setControl(swerveroni.withSpeeds(speeds));

@@ -56,7 +56,7 @@ public class Controls extends Subsystem {
     double d;
     ChassisSpeeds vel;
     double poseX,poseY,yaw;
-    Pigeon2 pigeon = new Pigeon2(45);
+    Pigeon2 pigeon = new Pigeon2(30);
     Timer timer = new Timer();
     Rotation2d rot,rot2;
     Pose2d desPos,curPos;
@@ -66,8 +66,8 @@ public class Controls extends Subsystem {
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
     //kI for both was 0.025
-    ProfiledPIDController xController = new ProfiledPIDController(0.96, 0.015, 0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController yController = new ProfiledPIDController(0.96, 0.015, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController xController = new ProfiledPIDController(1.00, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController yController = new ProfiledPIDController(0.96, 0.025, 0, new TrapezoidProfile.Constraints(3, 1));
     ProfiledPIDController rotController = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(3, 1));
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
@@ -193,7 +193,7 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = xController.calculate(poseX, -0.1651);
+        velY = xController.calculate(poseX, -0.18); // -0.1651
         velX = yController.calculate(poseY, -0.435);
         velOmega = rotController.calculate(yaw, 0);
         swerve.adjust(velX, velY, velOmega);
@@ -214,7 +214,7 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = xController.calculate(poseX, 0.1651);
+        velY = xController.calculate(poseX, 0.1840); // 1651
         velX = yController.calculate(poseY, -0.435);
         velOmega = rotController.calculate(yaw, 0);
         swerve.adjust(velX, velY, velOmega);

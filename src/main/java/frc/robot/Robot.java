@@ -6,6 +6,8 @@ package frc.robot;
 
 import java.util.Arrays;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -101,6 +103,9 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+    if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+      drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
     }
   }
 
