@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.States;
 //import frc.robot.commands.L2.L2Left;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.vision.Limelight;
@@ -79,6 +80,8 @@ public class Controls extends Subsystem {
 
     DigitalInput beamBreak = new DigitalInput(0);
 
+    LEDs leds = LEDs.getInstance();
+
     boolean intake = false;
     double prevReadout = 0;
     boolean runningIntake = false;
@@ -114,6 +117,21 @@ public class Controls extends Subsystem {
         }
         if(States.state == "coralHeld" && beamBreak.get() == true) {
             States.setState("canIntake");
+        }
+        if(States.state == "coralHeld" && limelight.getLock()) {
+            States.setState("tagSeen");
+        }
+        if(States.state == "tagSeen" && (Math.abs(xController.getPositionError())) < 0.01 && (Math.abs(yController.getPositionError()) < 0.01)) {
+            States.setState("ready");
+        }
+        if(States.state == "coralHeld") {
+            leds.setLEDColor(0, 0, 255);
+        } else if(States.state == "tagSeen") {
+            leds.setLEDColor(255, 255, 0);
+        } else if(States.state == "ready") {
+            leds.setLEDColor(0, 255, 0);
+        } else {
+            leds.setLEDColor(255, 0, 0);
         }
         if(buttonBoard.getRawButton(8)) {
             L2Right();
@@ -239,9 +257,7 @@ public class Controls extends Subsystem {
     }
 
     @Override
-    public void outputTelemetry() {
-        System.out.println(beamBreak.get());
-    }
+    public void outputTelemetry() {}
 
     @Override
     public void stop() {}

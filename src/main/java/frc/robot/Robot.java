@@ -43,9 +43,6 @@ public class Robot extends TimedRobot {
     controls = Controls.getInstance();
     elevator = Elevator.getInstance();
     shooter = Shooter.getInstance();
-    NamedCommands.registerCommand("L2", new AutoL2());
-    NamedCommands.registerCommand("ElevatorDown", new AutoElevatorDown());
-    NamedCommands.registerCommand("AutoShoot", new AutoShoot());
     limelight = Limelight.getInstance();
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
@@ -62,7 +59,6 @@ public class Robot extends TimedRobot {
       elevator,
       shooter
     ));
-    FollowPathCommand.warmupCommand().schedule();
   }
 
   // Update all subsystems on the robot's loop via the Subsystem Manager

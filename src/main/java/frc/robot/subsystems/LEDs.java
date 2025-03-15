@@ -31,7 +31,7 @@ public class LEDs extends Subsystem {
         config.stripType = LEDStripType.RGB; // Sets the LED Strip Type to RGB
         config.brightnessScalar = 0.5; // Sets LEDs to half brightness
         candle.configAllSettings(config);
-        candle.setLEDs(0, 0, 0); // Defaults LEDs to red upon init
+        candle.setLEDs(255, 0, 0); // Defaults LEDs to red upon init
     }
 
     // Mutator method for updating the active LED color on the CANdle

@@ -5,6 +5,8 @@ import static edu.wpi.first.units.Units.*;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.RobotCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -19,6 +21,8 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,7 +42,7 @@ public class Drive extends Subsystem {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = /*1.5 * Math.PI;*/ RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     /** Rotational and regular deadband */
-    private final double deadband = 0.2;
+    private final double deadband = 0.1;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * deadband).withRotationalDeadband(MaxAngularRate * deadband) // Add a 10% deadband
@@ -74,16 +78,15 @@ public class Drive extends Subsystem {
       e.printStackTrace();
     }
 
-
     // Configure AutoBuilder last
     AutoBuilder.configure(
             () -> drivetrain.getState().Pose, // Robot pose supplier
-            (pose) -> drivetrain.seedFieldCentric(), // Method to reset odometry (will be called if your auto has a starting pose)
-            () -> drivetrain.getState().Speeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has a starting pose)
+            () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> adjust(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond), //(speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(0.2, 0.0, 0.0), // Translation PID constants 1.5 0.073 0.0
-                    new PIDConstants(0.8, 0.0, 0.0) // Rotation PID constants 5.0 0.1 0.0
+                    new PIDConstants(0.2, 0, 0.0), // Translation PID constants 1.5 0.073 0.0 | 0.2 0.0 0.0
+                    new PIDConstants(0.8, 0, 0.0) // Rotation PID constants 5.0 0.1 0.0 | 0.8 0.0 0.0
             ),
             config, // The robot configuration
             () -> {
@@ -111,13 +114,14 @@ public class Drive extends Subsystem {
             )
         );
     }
-
+    
     // public void adjust(ChassisSpeeds speeds) {
     //     drivetrain.setControl(swerveroni.withSpeeds(speeds));
     // }
 
     public void adjust(double velX, double velY, double velOmega) {
         drivetrain.setControl(swerveroni2.withVelocityX(velX).withVelocityY(velY).withRotationalRate(velOmega));
+        System.out.println("VelX: " + velX + " VelY: " + velY + " VelOmega: " + velOmega);
     }
 
     public void sysIDFwdDynamic() {

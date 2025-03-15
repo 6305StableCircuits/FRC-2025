@@ -83,9 +83,7 @@ public class Shooter extends Subsystem {
         bool = false;
     }
 
-    public void update() {
-        System.out.println(encoder.getPosition());
-    }
+    public void update() {}
 
     @Override
     public void outputTelemetry() {}
