@@ -118,19 +118,21 @@ public class Controls extends Subsystem {
         if(States.state == "coralHeld" && beamBreak.get() == true) {
             States.setState("canIntake");
         }
-        if(States.state == "coralHeld" && limelight.getLock()) {
-            States.setState("tagSeen");
-        }
-        if(States.state == "tagSeen" && (Math.abs(xController.getPositionError())) < 0.01 && (Math.abs(yController.getPositionError()) < 0.01)) {
-            States.setState("ready");
-        }
+        // if(States.state == "coralHeld" && limelight.getLock()) {
+        //     States.setState("tagSeen");
+        // }
+        // if(States.state == "tagSeen" && (Math.abs(xController.getPositionError())) < 0.01 && (Math.abs(yController.getPositionError()) < 0.01)) {
+        //     States.setState("ready");
+        // }
         if(States.state == "coralHeld") {
             leds.setLEDColor(0, 0, 255);
-        } else if(States.state == "tagSeen") {
-            leds.setLEDColor(255, 255, 0);
-        } else if(States.state == "ready") {
-            leds.setLEDColor(0, 255, 0);
-        } else {
+        }
+        // } else if(States.state == "tagSeen") {
+        //     leds.setLEDColor(255, 255, 0);
+        // } else if(States.state == "ready") {
+        //     leds.setLEDColor(0, 255, 0);
+        // } 
+            else {
             leds.setLEDColor(255, 0, 0);
         }
         if(buttonBoard.getRawButton(8)) {
@@ -161,6 +163,9 @@ public class Controls extends Subsystem {
             shooter.up();
         } else {
             shooter.sabrina.stopMotor();
+        }
+        if(joystick.start().getAsBoolean()) {
+            swerve.drivetrain.seedFieldCentric();
         }
     }
 
