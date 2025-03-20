@@ -41,8 +41,8 @@ public class Shooter extends Subsystem {
     }
 
     public void forward() {
-        sasha.set(0.6);
-        makena.set(-0.5);
+        sasha.set(0.45);
+        makena.set(-0.35);
         bool = true;
     }
 
@@ -62,7 +62,7 @@ public class Shooter extends Subsystem {
   }    
 
     public void down() {
-        if(encoder.getPosition() > -15) {
+        if(encoder.getPosition() > -20) {
             sabrina.set(-0.2);
         } else {
             sabrina.stopMotor();
@@ -70,7 +70,7 @@ public class Shooter extends Subsystem {
     }
 
     public void up() {
-        if(encoder.getPosition() < -3) {
+        if(encoder.getPosition() < -3.25) {
             sabrina.set(0.2);
         } else {
             sabrina.stopMotor();

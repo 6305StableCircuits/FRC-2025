@@ -24,6 +24,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -51,8 +52,8 @@ public class Drive extends Subsystem {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     @SuppressWarnings("unused")
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-    private final SwerveRequest.ApplyRobotSpeeds swerveroni = new SwerveRequest.ApplyRobotSpeeds();
-    private final SwerveRequest.RobotCentric swerveroni2 = new SwerveRequest.RobotCentric();
+    public final SwerveRequest.ApplyRobotSpeeds swerveroni = new SwerveRequest.ApplyRobotSpeeds();
+    public final SwerveRequest.RobotCentric swerveroni2 = new SwerveRequest.RobotCentric();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
     RobotConfig config;
@@ -80,25 +81,21 @@ public class Drive extends Subsystem {
 
     // Configure AutoBuilder last
     AutoBuilder.configure(
-            () -> drivetrain.getState().Pose, // Robot pose supplier
-            (pose) -> drivetrain.resetPose(pose), // Method to reset odometry (will be called if your auto has a starting pose)
-            () -> drivetrain.getKinematics().toChassisSpeeds(drivetrain.getState().ModuleStates), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> adjust(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond), //(speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds)), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            drivetrain::getPose, // Robot pose supplier
+            drivetrain::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            drivetrain::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> drivetrain.setControl(swerveroni.withSpeeds(speeds).withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX()).withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY())), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                     new PIDConstants(0.2, 0, 0.0), // Translation PID constants 1.5 0.073 0.0 | 0.2 0.0 0.0
                     new PIDConstants(0.8, 0, 0.0) // Rotation PID constants 5.0 0.1 0.0 | 0.8 0.0 0.0
             ),
             config, // The robot configuration
             () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == Alliance.Red;
+                }
+                return false;
             },
             drivetrain // Reference to this subsystem to set requirements
     );

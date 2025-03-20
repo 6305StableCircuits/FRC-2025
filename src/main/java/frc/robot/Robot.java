@@ -82,9 +82,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
+    // if (m_autonomousCommand != null) {
+    //   m_autonomousCommand.schedule();
+    // }
+    m_autonomousCommand = drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(-0.25));
+
+    if(m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
   }
@@ -100,9 +105,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-      drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
-    }
+    // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+    //   drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
+    // }
   }
 
   @Override
