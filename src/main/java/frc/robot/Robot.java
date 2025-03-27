@@ -20,7 +20,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SubsystemManager;
 import frc.robot.subsystems.drive.Controls;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.LimelightLeft;
+import frc.robot.subsystems.vision.LimelightRight;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -31,7 +32,8 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   SubsystemManager subsystemManager;
-  Limelight limelight;
+  LimelightRight limelightRight;
+  LimelightLeft limelightLeft;
   LEDs leds;
   Drive drive;
   Controls controls;
@@ -43,7 +45,8 @@ public class Robot extends TimedRobot {
     controls = Controls.getInstance();
     elevator = Elevator.getInstance();
     shooter = Shooter.getInstance();
-    limelight = Limelight.getInstance();
+    limelightRight = LimelightRight.getInstance();
+    limelightLeft = LimelightLeft.getInstance();
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
 
@@ -52,7 +55,8 @@ public class Robot extends TimedRobot {
     // Add all Subsystems to the Subsystem Manager
     subsystemManager = new SubsystemManager();
     subsystemManager.addSystems(Arrays.asList(
-      limelight,
+      limelightRight,
+      limelightLeft,
       leds,
       drive,
       controls,

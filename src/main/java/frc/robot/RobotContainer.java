@@ -24,7 +24,7 @@ import frc.robot.commands.AutoShoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.LimelightRight;
 
 public class RobotContainer {
 

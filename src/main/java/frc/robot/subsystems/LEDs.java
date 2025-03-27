@@ -8,12 +8,10 @@ import com.ctre.phoenix.led.RainbowAnimation;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Constants;
-import frc.robot.subsystems.vision.Limelight;
 
 public class LEDs extends Subsystem {
     // Instantiate the CANdle with an ID defined in Constants
     CANdle candle = new CANdle(Constants.candleID);
-    Limelight limelight = Limelight.getInstance();
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances

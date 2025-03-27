@@ -37,7 +37,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Subsystem;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
-import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.LimelightRight;
 
 public class Drive extends Subsystem {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -118,7 +118,7 @@ public class Drive extends Subsystem {
 
     public void adjust(double velX, double velY, double velOmega) {
         drivetrain.setControl(swerveroni2.withVelocityX(velX).withVelocityY(velY).withRotationalRate(velOmega));
-        System.out.println("VelX: " + velX + " VelY: " + velY + " VelOmega: " + velOmega);
+        //System.out.println("VelX: " + velX + " VelY: " + velY + " VelOmega: " + velOmega);
     }
 
     public void sysIDFwdDynamic() {

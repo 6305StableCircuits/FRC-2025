@@ -7,24 +7,24 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class Limelight extends Subsystem {
+public class LimelightLeft extends Subsystem {
 
     // Network Table calls to access information directly from the limelight
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-left");
     NetworkTableEntry tx = table.getEntry("tx"); // Horizontal Offset of target from limelight crosshair
     NetworkTableEntry ty = table.getEntry("ty"); // Vertical Offset of target from limelight crosshair
     NetworkTableEntry ta = table.getEntry("ta"); // Percentage of limelight's vision taken up by target's area
     NetworkTableEntry tv = table.getEntry("tv"); // Returns whether or not at least one valid target is in view
     double x,y,area;
     boolean v;
-    double[] pose;
+    double[] pose = new double[6];
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
-    public static Limelight instance = null;
-    public static Limelight getInstance() {
+    public static LimelightLeft instance = null;
+    public static LimelightLeft getInstance() {
         if(instance == null) {
-            instance = new Limelight();
+            instance = new LimelightLeft();
         }
         return instance;
     }
@@ -59,7 +59,7 @@ public class Limelight extends Subsystem {
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
         v = tv.getInteger(0) == 1 ? true : false;
-        pose = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        pose = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
     }
 
     @Override
@@ -68,9 +68,9 @@ public class Limelight extends Subsystem {
     // Void method on a loop pushing updated telemetry to SmartDashboard
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("LimelightX", x);
-        SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightArea", area);
-        SmartDashboard.putBoolean("Lock?", v);
+        SmartDashboard.putNumber("LimelightLeftX", x);
+        SmartDashboard.putNumber("LimelightLeftY", y);
+        SmartDashboard.putNumber("LimelightLeftArea", area);
+        SmartDashboard.putBoolean("LeftLock?", v);
     }
 }

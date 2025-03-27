@@ -39,24 +39,27 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Subsystem;
-import frc.robot.subsystems.vision.Limelight;
+import frc.robot.subsystems.vision.LimelightLeft;
+import frc.robot.subsystems.vision.LimelightRight;
 
 public class Controls extends Subsystem {
 
     CommandXboxController joystick = new CommandXboxController(0);
     GenericHID buttonBoard = new GenericHID(1);
     Drive swerve = Drive.getInstance();
-    Limelight limelight = Limelight.getInstance();
+    LimelightRight limelightRight = LimelightRight.getInstance();
+    LimelightLeft limelightLeft = LimelightLeft.getInstance();
     Elevator elevator = Elevator.getInstance();
     Shooter shooter = Shooter.getInstance();
     //L2Left l2Left = new L2Left(this);
 
     //ProfiledPIDController controller = new ProfiledPIDController(0.3, 0, 0, new TrapezoidProfile.Constraints(5, 10));
     //HolonomicDriveController controller = new HolonomicDriveController(new PIDController(1, 0, 0), new PIDController(1, 0, 0), new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
-    double[] pose;
+    double[] poseRight = new double[6];
+    double[] poseLeft = new double[6];
     double d;
     ChassisSpeeds vel;
-    double poseX,poseY,yaw;
+    double poseXRight,poseYRight,yawRight,poseXLeft,poseYLeft,yawLeft;
     Pigeon2 pigeon = new Pigeon2(30);
     Timer timer = new Timer();
     Rotation2d rot,rot2;
@@ -66,10 +69,10 @@ public class Controls extends Subsystem {
     Trajectory trajectory;
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
-    //kI for both was 0.025
-    ProfiledPIDController xController = new ProfiledPIDController(0.75, 0.017, 0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController yController = new ProfiledPIDController(0.75, 0.017, 0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController rotController = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(3, 1));
+    //0.75 0.017
+    ProfiledPIDController xController = new ProfiledPIDController(1.35, 0.02,0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController yController = new ProfiledPIDController(1.35, 0.02, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController rotController = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(3, 1));
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
 
@@ -97,31 +100,25 @@ public class Controls extends Subsystem {
         timer.restart();
         trajectoryGenerated = false;
         pigeon.reset();
-        xController.setTolerance(.02);
-        yController.setTolerance(.08);
-        rotController.setTolerance(2);
+        xController.setTolerance(.01);
+        yController.setTolerance(.01);
+        rotController.setTolerance(5);
+        rotController.reset(0);
     }
 
     public void update() {
         swerve.swerve(joystick);
-        // if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(8)) {
-        //     L3Right();
-        // } else if(buttonBoard.getRawButton(1) && buttonBoard.getRawButton(5)) {
-        //     L3Left();
-        // } else if(buttonBoard.getRawButton(2) && buttonBoard.getRawButton(8)) {
-        //     L2Left();
-        // } else if(buttonBoard.getRawButton(2) & buttonBoard.getRawButton(5)) {
-        //     L2Right();
         if(beamBreak.get() == false) {
-            if(!limelight.getLock()) {
-                States.setState("coralHeld");
-            } else if(limelight.getLock() && poseX >= 0.1651 && poseX <= 0.1651 + 0.015) {
-                States.setState("Fire!");
-            } else if(limelight.getLock() && poseX <= -0.1905 && poseX >= -0.1905 - 0.015) {
-                States.setState("Fire!");
-            } else {
-                States.setState("tagSeen");
-            }
+            States.setState("coralHeld");
+            // if(!limelightLeft.getLock()) {
+            //     States.setState("coralHeld");
+            // } else if(limelightLeft.getLock() && poseXLeft >= 0.41 && poseXLeft <= 0.41 + 0.015) {
+            //     States.setState("Fire!");
+            // } else if(limelightLeft.getLock() && poseXRight <= -0.41 && poseXRight >= -0.41 - 0.015) {
+            //     States.setState("Fire!");
+            // } else {
+            //     States.setState("tagSeen");
+            // }
         } else {
             States.setState("canIntake");
         }
@@ -230,9 +227,9 @@ public class Controls extends Subsystem {
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
         
-        //velY = xController.calculate(poseX, -0.1651); // -0.1651 | -0.1905
-        //velX = yController.calculate(poseY, -1);
-        velOmega = rotController.calculate(yaw, 0);
+        velY = (-1) * xController.calculate(poseXRight, 0.372); // -0.1651 | -0.1905 // -0.41
+        velX = yController.calculate(poseYRight, -0.20); // -0.2
+        velOmega = rotController.calculate(yawRight, 18);
         swerve.adjust(0, 0, velOmega);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
@@ -251,10 +248,10 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        //velY = xController.calculate(poseX, 0.1651); // 1651 | 1945
-        //velX = yController.calculate(poseY, -1); // -0.4604
-        velOmega = rotController.calculate(yaw, 0);
-        swerve.adjust(0, 0, velOmega);
+        velY = xController.calculate(poseXLeft, 0.372); // 1651 | 1945
+        velX = yController.calculate(poseYLeft, -0.20); // -0.4604
+        //velOmega = rotController.calculate(yawLeft, -38.6);
+        swerve.adjust(velX, velY, 0);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
         // }
@@ -268,11 +265,18 @@ public class Controls extends Subsystem {
     }
 
     public void readPeriodicInputs() {
-        pose = limelight.getPose();
-        poseX = ((-1) * pose[0]);
-        poseY = pose[2];
-        yaw = ((-1) * pose[4]);
-        d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
+        poseRight = limelightRight.getPose();
+        poseXRight = (poseRight[0]);
+        poseYRight = poseRight[2];
+        yawRight = limelightRight.getYaw();
+        System.out.println(yawRight);
+
+        poseLeft = limelightLeft.getPose();
+        poseXLeft = ((-1) * poseLeft[0]);
+        poseYLeft = poseLeft[2];
+        yawLeft = ((-1) * poseLeft[4]);
+        //System.out.println(poseXLeft);
+        // d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }
 
     @Override
