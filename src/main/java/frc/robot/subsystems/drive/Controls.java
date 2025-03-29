@@ -13,6 +13,7 @@ import edu.wpi.first.hal.PWMJNI;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -69,10 +70,14 @@ public class Controls extends Subsystem {
     Trajectory trajectory;
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
-    //0.75 0.017
-    ProfiledPIDController xController = new ProfiledPIDController(0.95, 0.05,0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController yController = new ProfiledPIDController(0.95, 0.05, 0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController rotController = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(3, 1));
+    //1.25 0.8 0
+    //0.95 0.05 0
+    ProfiledPIDController xController = new ProfiledPIDController(1.25, 0.8,0, new TrapezoidProfile.Constraints(1, 0.25));
+    ProfiledPIDController yController = new ProfiledPIDController(0.95, 0.05, 0, new TrapezoidProfile.Constraints(1, 0.25));
+    ProfiledPIDController rotController = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(3, 1));
+
+    SimpleMotorFeedforward xFeedforward = new SimpleMotorFeedforward(0, 1, 1.5);
+    SimpleMotorFeedforward yFeedforward = new SimpleMotorFeedforward(0, 1, 1.5);
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
 
@@ -100,8 +105,10 @@ public class Controls extends Subsystem {
         timer.restart();
         trajectoryGenerated = false;
         pigeon.reset();
-        xController.setTolerance(.025);
-        yController.setTolerance(.05);
+        xController.setIntegratorRange(-2, 2);
+        yController.setIntegratorRange(-2, 2);
+        xController.setTolerance(.02);
+        yController.setTolerance(.035);
         rotController.setTolerance(4);
         rotController.reset(0);
     }
@@ -229,8 +236,8 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = (-1) * xController.calculate(poseXRight, 0.450); // -0.1651 | -0.1905 // -0.41
-        velX = yController.calculate(poseYRight, -0.25); // -0.2
+        velY = (-1) * (xController.calculate(poseXRight, 0.450) - xFeedforward.calculate(xController.getSetpoint().velocity)); // -0.1651 | -0.1905 // -0.41
+        velX = (yController.calculate(poseYRight, -0.25) - yFeedforward.calculate(yController.getSetpoint().velocity)); // -0.2
         velOmega = (-1) * rotController.calculate(yawRight, -4);
         swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {
@@ -250,8 +257,8 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = xController.calculate(poseXLeft, 0.42); // -0.1651 | -0.1905 // -0.41
-        velX = yController.calculate(poseYLeft, -0.25); // -0.2
+        velY = (xController.calculate(poseXLeft, 0.42) + xFeedforward.calculate(xController.getSetpoint().velocity)); // -0.1651 | -0.1905 // -0.41
+        velX = (yController.calculate(poseYLeft, -0.25) - yFeedforward.calculate(yController.getSetpoint().velocity)); // -0.2
         velOmega = (-1) * rotController.calculate(yawLeft, 0);
         swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {

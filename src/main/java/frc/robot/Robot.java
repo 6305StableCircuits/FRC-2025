@@ -11,8 +11,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.Auto;
 import frc.robot.commands.AutoElevatorDown;
-import frc.robot.commands.AutoL2;
+import frc.robot.commands.AutoBlip;
 import frc.robot.commands.AutoShoot;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
@@ -39,6 +42,10 @@ public class Robot extends TimedRobot {
   Controls controls;
   Elevator elevator;
   Shooter shooter;
+
+  SequentialCommandGroup auto;
+  AutoBlip autoBlip;
+  AutoShoot autoShoot;
   
   public Robot() {
     // Instantiate all Subsystems
@@ -49,6 +56,10 @@ public class Robot extends TimedRobot {
     limelightLeft = LimelightLeft.getInstance();
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
+
+    autoShoot = new AutoShoot();
+    autoBlip = new AutoBlip();
+    auto = new SequentialCommandGroup(autoBlip, new WaitCommand(1000), drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(1)), autoShoot);
 
     m_robotContainer = new RobotContainer();
 
@@ -86,12 +97,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // if (m_autonomousCommand != null) {
     //   m_autonomousCommand.schedule();
     // }
-    m_autonomousCommand = drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(-0.25));
+
+    m_autonomousCommand = auto;
 
     if(m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

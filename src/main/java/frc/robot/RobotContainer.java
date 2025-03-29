@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.AutoElevatorDown;
-import frc.robot.commands.AutoL2;
+import frc.robot.commands.AutoBlip;
 import frc.robot.commands.AutoShoot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
@@ -33,13 +33,13 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        NamedCommands.registerCommand("L2", new AutoL2());
-        NamedCommands.registerCommand("ElevatorDown", new AutoElevatorDown());
-        NamedCommands.registerCommand("AutoShoot", new AutoShoot());
+        // NamedCommands.registerCommand("L2", new AutoBlip());
+        // NamedCommands.registerCommand("ElevatorDown", new AutoElevatorDown());
+        // NamedCommands.registerCommand("AutoShoot", new AutoShoot());
 
         autoChooser = AutoBuilder.buildAutoChooser("1CoralL2");
 
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        //SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     public Command getAutonomousCommand() {
