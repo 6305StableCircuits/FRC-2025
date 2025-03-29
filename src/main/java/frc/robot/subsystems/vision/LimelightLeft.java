@@ -18,6 +18,7 @@ public class LimelightLeft extends Subsystem {
     double x,y,area;
     boolean v;
     double[] pose = new double[6];
+    double yaw;
     
     // Create a null instance of the Subsystem as well as a method getInstance() which will instantiate an instance upon
     // its first call and return the same instance for subsequent calls, ensuring that we don't end up with duplicate instances
@@ -53,6 +54,10 @@ public class LimelightLeft extends Subsystem {
         return pose;
     }
 
+    public double getYaw() {
+        return yaw;
+    }
+
     // Void method on a loop pulling updated telemetry to later push to SmartDashboard
     public void readPeriodicInputs() {
         x = this.getLock() ? tx.getDouble(0.0) : 100.0;
@@ -60,6 +65,7 @@ public class LimelightLeft extends Subsystem {
         area = ta.getDouble(0.0);
         v = tv.getInteger(0) == 1 ? true : false;
         pose = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        yaw = NetworkTableInstance.getDefault().getTable("limelight-left").getEntry("botpose_targetspace").getDoubleArray(new double[6])[4];
     }
 
     @Override

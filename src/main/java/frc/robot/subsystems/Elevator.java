@@ -88,6 +88,11 @@ public class Elevator extends Subsystem {
         garrett.setControl(garrettRequest);
     }
 
+    public void blip() {
+        hunter.setControl(hunterRequest.withPosition(5).withSlot(0));
+        garrett.setControl(garrettRequest);
+    }
+
     public void raiseL2() {
         hunter.setControl(hunterRequest.withPosition(15).withSlot(0)); // 15.5
         garrett.setControl(garrettRequest);

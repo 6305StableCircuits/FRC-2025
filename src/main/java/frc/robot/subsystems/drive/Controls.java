@@ -70,9 +70,9 @@ public class Controls extends Subsystem {
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
     //0.75 0.017
-    ProfiledPIDController xController = new ProfiledPIDController(1.35, 0.02,0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController yController = new ProfiledPIDController(1.35, 0.02, 0, new TrapezoidProfile.Constraints(3, 1));
-    ProfiledPIDController rotController = new ProfiledPIDController(0.04, 0, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController xController = new ProfiledPIDController(0.95, 0.05,0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController yController = new ProfiledPIDController(0.95, 0.05, 0, new TrapezoidProfile.Constraints(3, 1));
+    ProfiledPIDController rotController = new ProfiledPIDController(0.03, 0, 0, new TrapezoidProfile.Constraints(3, 1));
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
 
@@ -100,25 +100,22 @@ public class Controls extends Subsystem {
         timer.restart();
         trajectoryGenerated = false;
         pigeon.reset();
-        xController.setTolerance(.01);
-        yController.setTolerance(.01);
-        rotController.setTolerance(5);
+        xController.setTolerance(.025);
+        yController.setTolerance(.05);
+        rotController.setTolerance(4);
         rotController.reset(0);
     }
 
     public void update() {
         swerve.swerve(joystick);
         if(beamBreak.get() == false) {
-            States.setState("coralHeld");
-            // if(!limelightLeft.getLock()) {
-            //     States.setState("coralHeld");
-            // } else if(limelightLeft.getLock() && poseXLeft >= 0.41 && poseXLeft <= 0.41 + 0.015) {
-            //     States.setState("Fire!");
-            // } else if(limelightLeft.getLock() && poseXRight <= -0.41 && poseXRight >= -0.41 - 0.015) {
-            //     States.setState("Fire!");
-            // } else {
-            //     States.setState("tagSeen");
-            // }
+            if(!limelightLeft.getLock() && !limelightRight.getLock()) {
+                States.setState("coralHeld");
+            } else if((limelightLeft.getLock() && xController.atGoal() && yController.atGoal() && rotController.atGoal()) || (limelightRight.getLock() && xController.atGoal() && yController.atGoal() && rotController.atGoal())) {
+                States.setState("Fire!");
+            } else {
+                States.setState("tagSeen");
+            }
         } else {
             States.setState("canIntake");
         }
@@ -130,6 +127,9 @@ public class Controls extends Subsystem {
             leds.setLEDColor(0, 255, 0);
         } else {
             leds.setLEDColor(255, 0, 0);
+            xController.reset(0);
+            yController.reset(0);
+            rotController.reset(0);
         }
         if(buttonBoard.getRawButton(8) && !(States.state == "Fire!")) {
             L2Right();
@@ -142,6 +142,9 @@ public class Controls extends Subsystem {
             elevator.raiseL2();
         } else if(buttonBoard.getRawButton(3)) {
             elevator.resetElevator();
+        }
+        if(joystick.a().getAsBoolean()) {
+            elevator.blip();
         }
         if(buttonBoard.getRawButton(6) && States.state == "canIntake") {
             shooter.intake();
@@ -226,11 +229,10 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        
-        velY = (-1) * xController.calculate(poseXRight, 0.372); // -0.1651 | -0.1905 // -0.41
-        velX = yController.calculate(poseYRight, -0.20); // -0.2
-        velOmega = rotController.calculate(yawRight, 18);
-        swerve.adjust(0, 0, velOmega);
+        velY = (-1) * xController.calculate(poseXRight, 0.450); // -0.1651 | -0.1905 // -0.41
+        velX = yController.calculate(poseYRight, -0.25); // -0.2
+        velOmega = (-1) * rotController.calculate(yawRight, -4);
+        swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
         // }
@@ -248,10 +250,10 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = xController.calculate(poseXLeft, 0.372); // 1651 | 1945
-        velX = yController.calculate(poseYLeft, -0.20); // -0.4604
-        //velOmega = rotController.calculate(yawLeft, -38.6);
-        swerve.adjust(velX, velY, 0);
+        velY = xController.calculate(poseXLeft, 0.42); // -0.1651 | -0.1905 // -0.41
+        velX = yController.calculate(poseYLeft, -0.25); // -0.2
+        velOmega = (-1) * rotController.calculate(yawLeft, 0);
+        swerve.adjust(velX, velY, velOmega);
         // if(yController.getPositionError() < 0.05) {
         //     elevator.raiseL2();
         // }
@@ -269,12 +271,12 @@ public class Controls extends Subsystem {
         poseXRight = (poseRight[0]);
         poseYRight = poseRight[2];
         yawRight = limelightRight.getYaw();
-        System.out.println(yawRight);
+        System.out.println(yawLeft);
 
         poseLeft = limelightLeft.getPose();
         poseXLeft = ((-1) * poseLeft[0]);
         poseYLeft = poseLeft[2];
-        yawLeft = ((-1) * poseLeft[4]);
+        yawLeft = limelightLeft.getYaw();
         //System.out.println(poseXLeft);
         // d = Math.sqrt(Math.pow(poseX, 2) + Math.pow(poseY, 2));
     }
