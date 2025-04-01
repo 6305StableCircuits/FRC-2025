@@ -70,14 +70,24 @@ public class Controls extends Subsystem {
     Trajectory trajectory;
     boolean trajectoryGenerated = false;
     PathPlannerPath path;
+    int cR = 0;
+    int cL = 0;
+    int negRight = 0;
+    int negLeft = 0;
     //1.25 0.8 0
     //0.95 0.05 0
-    ProfiledPIDController xController = new ProfiledPIDController(1.25, 0.8,0, new TrapezoidProfile.Constraints(1, 0.25));
-    ProfiledPIDController yController = new ProfiledPIDController(0.95, 0.05, 0, new TrapezoidProfile.Constraints(1, 0.25));
+
+    //1.25 0.8 0
+    //0.95 0.05 0
+    //0.02 0 0
+
+    //lower kP increase kI probably
+    ProfiledPIDController xController = new ProfiledPIDController(0.4, 0.2,0, new TrapezoidProfile.Constraints(1, 0.25));
+    ProfiledPIDController yController = new ProfiledPIDController(0.3, 0.1, 0, new TrapezoidProfile.Constraints(1, 0.25));
     ProfiledPIDController rotController = new ProfiledPIDController(0.02, 0, 0, new TrapezoidProfile.Constraints(3, 1));
 
-    SimpleMotorFeedforward xFeedforward = new SimpleMotorFeedforward(0, 1, 1.5);
-    SimpleMotorFeedforward yFeedforward = new SimpleMotorFeedforward(0, 1, 1.5);
+    SimpleMotorFeedforward xFeedforward = new SimpleMotorFeedforward(0, 1.25, 1.5);
+    SimpleMotorFeedforward yFeedforward = new SimpleMotorFeedforward(0, 1.25, 1.5);
 
     ChassisSpeeds appliedSpeed = new ChassisSpeeds();
 
@@ -105,10 +115,8 @@ public class Controls extends Subsystem {
         timer.restart();
         trajectoryGenerated = false;
         pigeon.reset();
-        xController.setIntegratorRange(-2, 2);
-        yController.setIntegratorRange(-2, 2);
-        xController.setTolerance(.02);
-        yController.setTolerance(.035);
+        xController.setTolerance(.04);
+        yController.setTolerance(.05);
         rotController.setTolerance(4);
         rotController.reset(0);
     }
@@ -236,7 +244,20 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = (-1) * (xController.calculate(poseXRight, 0.450) - xFeedforward.calculate(xController.getSetpoint().velocity)); // -0.1651 | -0.1905 // -0.41
+        if(cR == 0) {
+            if((0.450 - poseXRight) < 0) {
+                cR = -1;
+            } else if((0.450 - poseXRight) > 0) {
+                cR = 1;
+            }
+        }
+
+        if(xController.atGoal()) {
+            cR = 0;
+        }
+
+        System.out.println(xController.getSetpoint().velocity);
+        velY = (-1) * (xController.calculate(poseXRight, 0.450) + (xFeedforward.calculate(cR * xController.getSetpoint().velocity))); // -0.1651 | -0.1905 // -0.41
         velX = (yController.calculate(poseYRight, -0.25) - yFeedforward.calculate(yController.getSetpoint().velocity)); // -0.2
         velOmega = (-1) * rotController.calculate(yawRight, -4);
         swerve.adjust(velX, velY, velOmega);
@@ -257,7 +278,19 @@ public class Controls extends Subsystem {
         // appliedSpeed.vxMetersPerSecond = yController.calculate(poseY, -0.435);
         // appliedSpeed.omegaRadiansPerSecond = rotController.calculate(yaw, 0);
         // swerve.adjust(appliedSpeed);
-        velY = (xController.calculate(poseXLeft, 0.42) + xFeedforward.calculate(xController.getSetpoint().velocity)); // -0.1651 | -0.1905 // -0.41
+        if(cL == 0) {
+            if((-0.42 - poseXLeft) < 0) {
+                cL = 1;
+            } else if((-0.42 - poseXLeft) > 0) {
+                cL = -1;
+            }
+        }
+
+        if(xController.atGoal()) {
+            cL = 0;
+        }
+        
+        velY = ((-1) * ((xController.calculate(poseXLeft, -0.42)) + xFeedforward.calculate(cL * xController.getSetpoint().velocity))); // -0.1651 | -0.1905 // -0.41
         velX = (yController.calculate(poseYLeft, -0.25) - yFeedforward.calculate(yController.getSetpoint().velocity)); // -0.2
         velOmega = (-1) * rotController.calculate(yawLeft, 0);
         swerve.adjust(velX, velY, velOmega);
@@ -278,10 +311,10 @@ public class Controls extends Subsystem {
         poseXRight = (poseRight[0]);
         poseYRight = poseRight[2];
         yawRight = limelightRight.getYaw();
-        System.out.println(yawLeft);
+        //System.out.println(yawLeft);
 
         poseLeft = limelightLeft.getPose();
-        poseXLeft = ((-1) * poseLeft[0]);
+        poseXLeft = (poseLeft[0]);
         poseYLeft = poseLeft[2];
         yawLeft = limelightLeft.getYaw();
         //System.out.println(poseXLeft);

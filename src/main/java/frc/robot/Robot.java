@@ -43,9 +43,7 @@ public class Robot extends TimedRobot {
   Elevator elevator;
   Shooter shooter;
 
-  SequentialCommandGroup auto;
-  AutoBlip autoBlip;
-  AutoShoot autoShoot;
+  Auto auto;
   
   public Robot() {
     // Instantiate all Subsystems
@@ -57,9 +55,7 @@ public class Robot extends TimedRobot {
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
 
-    autoShoot = new AutoShoot();
-    autoBlip = new AutoBlip();
-    auto = new SequentialCommandGroup(autoBlip, new WaitCommand(1000), drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(1)), autoShoot);
+    auto = new Auto();
 
     m_robotContainer = new RobotContainer();
 
@@ -103,10 +99,8 @@ public class Robot extends TimedRobot {
     //   m_autonomousCommand.schedule();
     // }
 
-    m_autonomousCommand = auto;
-
-    if(m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if(auto != null) {
+      auto.schedule();
     }
   }
 
@@ -118,8 +112,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (auto != null) {
+      auto.cancel();
     }
     // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
     //   drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);

@@ -23,7 +23,6 @@ public class Shooter extends Subsystem {
     // private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(15, 15);
     // private final ProfiledPIDController sabrinaController = new ProfiledPIDController(3, 0.3, 0.02, constraints);
     private static Shooter instance = null;
-    public boolean bool;
     public double x,y;
     public static Shooter getInstance() {
         if (instance == null) {
@@ -43,7 +42,6 @@ public class Shooter extends Subsystem {
     public void forward() {
         sasha.set(0.3);
         makena.set(-0.2);
-        bool = true;
     }
 
     public void intake() {
@@ -80,7 +78,6 @@ public class Shooter extends Subsystem {
     public void stopShooter() {
         sasha.stopMotor();
         makena.stopMotor();
-        bool = false;
     }
 
     public void update() {}
