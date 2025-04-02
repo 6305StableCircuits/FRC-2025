@@ -96,6 +96,8 @@ public class Controls extends Subsystem {
     double velY = 0;
     double velOmega = 0;
 
+    public boolean teleop = false;
+
     DigitalInput beamBreak = new DigitalInput(0);
 
     LEDs leds = LEDs.getInstance();
@@ -121,12 +123,16 @@ public class Controls extends Subsystem {
         rotController.reset(0);
     }
 
+    public void setTELEOP() {
+        teleop = true;
+    }
+
     public void update() {
         swerve.swerve(joystick);
         if(beamBreak.get() == false) {
             if(!limelightLeft.getLock() && !limelightRight.getLock()) {
                 States.setState("coralHeld");
-            } else if((limelightLeft.getLock() && xController.atGoal() && yController.atGoal() && rotController.atGoal()) || (limelightRight.getLock() && xController.atGoal() && yController.atGoal() && rotController.atGoal())) {
+            } else if((limelightRight.getLock() && ((Math.abs(poseXRight - 0.450)) < 0.04) && ((Math.abs(poseYRight + 0.22))) < 0.05) || (limelightLeft.getLock() && ((Math.abs(poseXLeft + 0.42)) < 0.04) && ((Math.abs(poseYLeft + 0.22)) < 0.05))) {
                 States.setState("Fire!");
             } else {
                 States.setState("tagSeen");
@@ -137,7 +143,7 @@ public class Controls extends Subsystem {
         if(States.state == "coralHeld") {
             leds.setLEDColor(0, 0, 255);
         } else if(States.state == "tagSeen") {
-            leds.setLEDColor(255, 255, 0);
+            leds.setLEDColor(255, 255, 255);
         } else if(States.state == "Fire!") {
             leds.setLEDColor(0, 255, 0);
         } else {
@@ -161,12 +167,14 @@ public class Controls extends Subsystem {
         if(joystick.a().getAsBoolean()) {
             elevator.blip();
         }
-        if(buttonBoard.getRawButton(6) && States.state == "canIntake") {
-            shooter.intake();
-        } else if(buttonBoard.getRawButton(9)) {
-            shooter.forward();
-        } else {
-            shooter.stopShooter();
+        if(teleop) {
+            if(buttonBoard.getRawButton(6) && States.state == "canIntake") {
+                shooter.intake();
+            } else if(buttonBoard.getRawButton(9)) {
+                shooter.forward();
+            } else {
+                shooter.stopShooter();
+            }
         }
         if(buttonBoard.getRawButton(3)) {
             elevator.resetElevator();

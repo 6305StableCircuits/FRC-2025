@@ -7,7 +7,7 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drive.Drive;
 
-public class Auto extends Command {
+public class Auto2 extends Command {
     Elevator elevator = Elevator.getInstance();
     Shooter shooter = Shooter.getInstance();
     Drive drive = Drive.getInstance();
@@ -15,24 +15,21 @@ public class Auto extends Command {
     boolean shoot;
     int i;
 
-    public Auto() {
+    public Auto2() {
         autoTimer = new Timer();
         shoot = false;
         i = 0;
     }
 
     public void initialize() {
-        elevator.blip();
+        elevator.raiseL2();
         autoTimer.start();
     }
 
     public void execute() {
-        if(autoTimer.get() >= 7) {
-            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(0)).schedule();
-        } else if(autoTimer.get() >= 5) {
+        if(autoTimer.get() >= 6) {
             shooter.stopShooter();
-            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(0.25)).schedule();
-        } else if(autoTimer.get() >= 3.5) {
+        } else if(autoTimer.get() >= 4.3) {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(0)).schedule();
             shooter.sasha.set(0.4);
             shooter.makena.set(-0.3);

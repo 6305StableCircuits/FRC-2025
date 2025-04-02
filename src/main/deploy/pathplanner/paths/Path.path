@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 5.45,
-        "y": 1.9
+        "x": 3.6196875,
+        "y": 2.6190056818181815
       },
       "prevControl": {
-        "x": 5.110542621066998,
-        "y": 1.8851686774115928
+        "x": 3.280230121066998,
+        "y": 2.6041743592297744
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": "RealPaths",

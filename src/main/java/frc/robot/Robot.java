@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.Auto;
-import frc.robot.commands.AutoElevatorDown;
-import frc.robot.commands.AutoBlip;
-import frc.robot.commands.AutoShoot;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Shooter;
@@ -42,8 +39,6 @@ public class Robot extends TimedRobot {
   Controls controls;
   Elevator elevator;
   Shooter shooter;
-
-  Auto auto;
   
   public Robot() {
     // Instantiate all Subsystems
@@ -54,8 +49,6 @@ public class Robot extends TimedRobot {
     limelightLeft = LimelightLeft.getInstance();
     leds = LEDs.getInstance();
     drive = Drive.getInstance();
-
-    auto = new Auto();
 
     m_robotContainer = new RobotContainer();
 
@@ -93,14 +86,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    // if (m_autonomousCommand != null) {
-    //   m_autonomousCommand.schedule();
-    // }
-
-    if(auto != null) {
-      auto.schedule();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
     }
   }
 
@@ -112,9 +101,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (auto != null) {
-      auto.cancel();
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
     }
+    controls.setTELEOP();
     // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
     //   drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
     // }
