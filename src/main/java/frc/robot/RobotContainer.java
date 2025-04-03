@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.Auto;
 import frc.robot.commands.Auto2;
+import frc.robot.commands.Auto3;
+import frc.robot.commands.Auto4;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.CommandSwerveDrivetrain;
 import frc.robot.subsystems.drive.Drive;
@@ -34,6 +36,8 @@ public class RobotContainer {
     public RobotContainer() {
         autoChooser.setDefaultOption("CenterL1", new Auto());
         autoChooser.addOption("SideL1", new Auto2());
+        autoChooser.addOption("Leave", new Auto3());
+        autoChooser.addOption("CenterL1ToCoralStation", new Auto4());
 
         SmartDashboard.putData(autoChooser);
     }

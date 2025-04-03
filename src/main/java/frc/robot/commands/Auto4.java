@@ -7,18 +7,14 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.drive.Drive;
 
-public class Auto2 extends Command {
+public class Auto4 extends Command {
     Elevator elevator = Elevator.getInstance();
     Shooter shooter = Shooter.getInstance();
     Drive drive = Drive.getInstance();
     Timer autoTimer;
-    boolean shoot;
-    int i;
 
-    public Auto2() {
+    public Auto4() {
         autoTimer = new Timer();
-        shoot = false;
-        i = 0;
     }
 
     public void initialize() {
@@ -27,12 +23,20 @@ public class Auto2 extends Command {
     }
 
     public void execute() {
-        if(autoTimer.get() >= 8.5) {
+        if(autoTimer.get() >= 11) {
+            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withRotationalRate(0)).schedule();
+            elevator.resetElevator();
+        } else if(autoTimer.get() >= 9) {
+            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(0)).schedule();
+            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withRotationalRate(0.5)).schedule();
+        } 
+        else if(autoTimer.get() >= 7) {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(0)).schedule();
-        } else if(autoTimer.get() >= 6.5) {
+            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(0.5)).schedule();
+        } else if(autoTimer.get() >= 5) {
             shooter.stopShooter();
-            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(0.25)).schedule();
-        } else if(autoTimer.get() >= 4.8) {
+            drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(-0.50)).schedule();
+        } else if(autoTimer.get() >= 3.5) {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(0)).schedule();
             shooter.sasha.set(0.4);
             shooter.makena.set(-0.3);
