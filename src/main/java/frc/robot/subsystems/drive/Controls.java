@@ -132,7 +132,7 @@ public class Controls extends Subsystem {
         if(beamBreak.get() == false) {
             if(!limelightLeft.getLock() && !limelightRight.getLock()) {
                 States.setState("coralHeld");
-            } else if((limelightRight.getLock() && ((Math.abs(poseXRight - 0.450)) < 0.03) && ((Math.abs(poseYRight + 0.22))) < 0.05) || (limelightLeft.getLock() && ((Math.abs(poseXLeft + 0.42)) < 0.03) && ((Math.abs(poseYLeft + 0.22)) < 0.05))) {
+            } else if((limelightRight.getLock() && ((Math.abs(poseXRight - 0.470)) < 0.03) && ((Math.abs(poseYRight + 0.22))) < 0.05) || (limelightLeft.getLock() && ((Math.abs(poseXLeft + 0.44)) < 0.03) && ((Math.abs(poseYLeft + 0.22)) < 0.05))) {
                 States.setState("Fire!");
             } else {
                 States.setState("tagSeen");

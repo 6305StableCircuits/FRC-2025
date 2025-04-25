@@ -106,6 +106,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     controls.setTELEOP(true);
+    drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
     // if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
     //   drive.drivetrain.getPigeon2().setYaw(drive.drivetrain.getPigeon2().getYaw().getValueAsDouble() + 180);
     // }

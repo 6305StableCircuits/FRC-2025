@@ -94,12 +94,12 @@ public class Elevator extends Subsystem {
     }
 
     public void raiseL2() {
-        hunter.setControl(hunterRequest.withPosition(15).withSlot(0)); // 15.5
+        hunter.setControl(hunterRequest.withPosition(14.5).withSlot(0)); // 15.5
         garrett.setControl(garrettRequest);
     }
 
     public void raiseL3() {
-        hunter.setControl(hunterRequest.withPosition(27.35).withSlot(0)); // 28.25
+        hunter.setControl(hunterRequest.withPosition(26.85).withSlot(0)); // 28.25
         garrett.setControl(garrettRequest);
     }
 

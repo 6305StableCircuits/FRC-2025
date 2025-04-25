@@ -34,8 +34,8 @@ public class Auto extends Command {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityY(0.25)).schedule();
         } else if(autoTimer.get() >= 3.5) {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(0)).schedule();
-            shooter.sasha.set(0.4);
-            shooter.makena.set(-0.3);
+            shooter.sasha.set(0.25);
+            shooter.makena.set(-0.15);
         } else if(autoTimer.get() >= 2.000) {
             drive.drivetrain.applyRequest(() -> drive.swerveroni2.withVelocityX(1)).schedule();
         }
